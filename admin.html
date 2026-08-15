@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الرقابة والاعتماد - لوحة تحكم الإدارة</title>
+    <style>
+        /* التنسيقات الرسمية للموقع المعتمد أوفلاين */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        /* هيدر الآدمن الوزاري الموحد */
+        header { background-color: #ffffff; border-bottom: 4px solid #b45309; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 15px 30px; }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .gov-info { text-align: right; }
+        .gov-country { font-size: 12px; color: #64748b; font-weight: 600; }
+        .gov-ministry { font-size: 20px; font-weight: bold; color: #1e293b; margin: 2px 0; }
+        .gov-system { font-size: 14px; font-weight: 600; color: #d97706; }
+        .logos-container { display: flex; align-items: center; gap: 20px; background-color: #ffffff; padding: 5px 10px; }
+        .logo-img-moe { height: 65px; width: auto; object-fit: contain; }
+        .logo-img-vision { height: 45px; width: auto; object-fit: contain; }
+        .logo-divider { width: 1px; height: 40px; background-color: #cbd5e1; }
+
+        /* واجهة تسجيل الدخول الاحترافية المدمجة */
+        .login-wrapper { display: flex; justify-content: center; align-items: center; flex-grow: 1; padding: 40px 20px; }
+        .login-box { width: 100%; max-width: 420px; background: white; padding: 35px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); text-align: center; }
+        .login-icon { font-size: 40px; margin-bottom: 10px; color: #d97706; }
+        .login-title { font-size: 20px; font-weight: bold; color: #1e293b; margin-bottom: 5px; }
+        .login-subtitle { font-size: 12px; color: #64748b; margin-bottom: 25px; }
+        
+        /* عناصر نماذج الإدخال */
+        .form-group { margin-bottom: 20px; text-align: right; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; transition: all 0.2s; }
+        .form-control:focus { border-color: #d97706; box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1); }
+        .btn-login { background-color: #d97706; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; font-size: 15px; transition: background 0.2s; }
+        .btn-login:hover { background-color: #b45309; }
+        .btn-back-home { display: block; margin-top: 20px; color: #64748b; font-size: 13px; text-decoration: none; }
+        .btn-back-home:hover { color: #1e293b; }
+
+        /* لوحة التحكم الرئيسية (مخفية كلياً ولا تظهر إلا للآدمن المصرح له) */
+        #adminMain { max-width: 1250px; margin: 30px auto; padding: 0 20px; flex-grow: 1; width: 100%; display: none; }
+        .dashboard-container { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .dash-title { font-size: 22px; font-weight: bold; color: #1e293b; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
+        
+        /* جدول استعراض طلبات المدارس */
+        .table-responsive { width: 100%; overflow-x: auto; border-radius: 10px; border: 1px solid #e2e8f0; }
+        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; }
+        th { background-color: #f8fafc; color: #334155; padding: 14px; font-weight: bold; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+        td { padding: 14px; border-bottom: 1px solid #edf2f7; color: #475569; vertical-align: middle; }
+        tr:hover { background-color: #f8fafc; }
+        
+        /* شارات الحالة وصور الإيصالات البنكية */
+        .status-badge { padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .status-pending { background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+        .status-active { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .receipt-preview { width: 75px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer; transition: transform 0.2s; }
+        .receipt-preview:hover { transform: scale(1.8); z-index: 50; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        
+        /* أزرار لوحة التحكم */
+        .btn-approve { background-color: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; margin-left: 5px; }
+        .btn-approve:hover { background-color: #059669; }
+        .btn-delete { background-color: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; }
+        .btn-delete:hover { background-color: #dc2626; }
+        .btn-logout { background-color: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; border: none; }
+        .btn-logout:hover { background-color: #dc2626; }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر الموحد للآدمن -->
+    <header>
+        <div class="header-container">
+            <div class="gov-info">
+                <div class="gov-country">المملكة العربية السعودية</div>
+                <div class="gov-ministry">وزارة التعلـيـم</div>
+                <div class="gov-system">لوحة تحكم النظام العام (الآدمن)</div>
+            </div>
+            
+            <div class="logos-container">
+                <img src="moe_logo.svg" alt="وزارة التعليم" class="logo-img-moe" onerror="this.src='moe_logo.png';">
+                <div class="logo-divider"></div>
+                <img src="vision_logo.png" alt="رؤية 2030" class="logo-img-vision" onerror="this.src='vision_logo.jpg';">
+            </div>
+        </div>
+    </header>
+
+    <!-- شاشة تسجيل الدخول الاحترافية المدمجة -->
+    <div class="login-wrapper" id="loginWrapper">
+        <div class="login-box">
+            <div class="login-icon">🔒</div>
+            <h2 class="login-title">تسجيل دخول المشرف</h2>
+            <p class="login-subtitle">نظام محمي وخاص بمسؤولي إدارة الموقع فقط</p>
+            
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>اسم المستخدم:</label>
+                    <input type="text" id="adminUser" class="form-control" required placeholder="أدخل اسم المستخدم (admin)" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور:</label>
+                    <input type="password" id="adminPass" class="form-control" required placeholder="أدخل كلمة المرور (123)">
+                </div>
+                <button type="submit" class="btn-login">تسجيل الدخول الآمن</button>
+                <a href="index.html" class="btn-back-home">العودة للواجهة الرئيسية للموقع</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- لوحة التحكم المغلقة والجدول (تفتح برمجياً فقط بعد نجاح مطابقة الخانتين) -->
+    <main id="adminMain">
+        <div class="dashboard-container">
+            <div class="dash-title">
+                <span>📋 طلبات تفعيل حسابات المدارس وإيصالات السداد (40 ريال)</span>
+                <button onclick="handleAdminLogout()" class="btn-logout">تسجيل الخروج الآمن</button>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                                                 <tr>
+                        <th>المنطقة</th>
+                        <th>اسم المدرسة</th>
+                        <th>المرحلة</th>
+                        <th>مدير/ة المدرسة</th>
+                        <th>رقم الجوال</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>كلمة المرور</th>
+                        <th>إيصال السداد</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                    </thead>
+                    <tbody id="schoolsTableBody">
+                        <!-- تُبنى البيانات وتُعرض هنا برمجياً فور التحقق -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- الفوتر السفلي -->
+    <footer style="background-color: #1e293b; color: #94a3b8; text-align: center; padding: 15px; font-size: 12px;">
+        المملكة العربية السعودية • جميع الحقوق محفوظة لنظام الالتزام المدرسي 1448 هـ
+    </footer>
+
+    <!-- السكربت البرمجي المكتمل والمصحح لتفادي قيود المتصفح الحية -->
+    <script>
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            var usernameInput = document.getElementById('adminUser').value.trim();
+            var passwordInput = document.getElementById('adminPass').value.trim();
+
+            // التحقق المطوّر لاسم المستخدم وكلمة السر المعتمدة لديك
+            if (usernameInput === 'abdulaziz172' && passwordInput === 'ABDulaziz@2030') {
+                // إخفاء شاشة تسجيل الدخول بالكامل وعرض اللوحة في نفس الصفحة فوراً
+                document.getElementById('loginWrapper').style.display = 'none';
+                document.getElementById('adminMain').style.display = 'block';
+                renderSchoolsData(); // جلب طلبات المدارس والإيصالات المخزنة
+                        } else {
+                alert('⚠️ خطأ أمني: اسم المستخدم أو كلمة المرور غير صحيحة!');
+            }
+        }
+
+        function handleAdminLogout() {
+            document.getElementById('adminUser').value = '';
+            document.getElementById('adminPass').value = '';
+            document.getElementById('loginWrapper').style.display = 'flex';
+            document.getElementById('adminMain').style.display = 'none';
+        }
+
+                 // استدعاء مكاتب خوادم Firebase السحابية الرسمية لربط لوحة الآدمن أونلاين
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, get, set } from "https://gstatic.com";
+
+        // إعدادات خادم قاعدة البيانات المركزي الخاص بك
+        const firebaseConfig = {
+            databaseURL: "https://firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // دالة جلب وعرض طلبات المدارس وكلمات مرورهم مباشرة من السيرفر أونلاين
+        async function renderSchoolsData() {
+            var tbody = document.getElementById('schoolsTableBody');
+            if(!tbody) return;
+            
+            try {
+                const snapshot = await get(ref(db, 'schools'));
+                if (!snapshot.exists()) {
+                    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:40px; color:#64748b; font-weight:bold;">⚠️ لا توجد طلبات مدارس مسجلة بالسيرفر حالياً.</td></tr>';
+                    return;
+                }
+
+                var schools = snapshot.val();
+                tbody.innerHTML = '';
+
+                for (let key in schools) {
+                    var s = schools[key];
+                    if (s) {
+                        var badge = s.status === "تم التفعيل" ? "status-active" : "status-pending";
+                        var statusText = s.status === "تم التفعيل" ? "معتمد ومفعل" : "بانتظار الاعتماد";
+                        var img = s.receipt ? '<img src="' + s.receipt + '" class="receipt-preview" onclick="window.open(this.src)" style="height:35px; cursor:pointer; border-radius:4px;">' : 'لا يوجد';
+                        
+                        var btn = s.status === "تم التفعيل" 
+                            ? '<span style="color:#059669; font-weight:bold;">✓ معتمد</span>' 
+                            : '<button class="btn-approve" onclick="approveSchoolAccount(\'' + key + '\')" style="padding:5px 10px; font-weight:bold; background:#059669; color:#fff; border:none; border-radius:6px; cursor:pointer;">✅ اعتماد وتفعيل</button>';
+                        
+                        // حقن وعرض كافة البيانات الحساسة للمدراء بما فيها كلمة المرور بشكل منظم
+                        var row = '<tr>' +
+                            '<td>' + (s.region || "-") + '</td>' +
+                            '<td><b>' + s.schoolName + '</b></td>' +
+                            '<td>' + (s.stage || "-") + '</td>' +
+                            '<td>' + (s.managerName || "-") + '</td>' +
+                            '<td>' + (s.phone || "-") + '</td>' +
+                            '<td>' + s.email + '</td>' +
+                            '<td><code style="background:#f1f5f9; padding:3px 8px; border-radius:4px; font-weight:bold; color:#dc2626; font-family:monospace;">' + (s.password || "-") + '</code></td>' +
+                            '<td>' + (s.region || "-") + '</td>' +
+                            '<td><span class="badge ' + badge + '" style="padding:4px 8px; font-size:11px; font-weight:bold; border-radius:6px;">' + statusText + '</span></td>' +
+                            '<td>' + img + '</td>' +
+                            '<td>' + btn + '</td>' +
+                            '</tr>';
+                        
+                        tbody.innerHTML += row;
+                    }
+                }
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:30px; color:#ef4444;">⚠️ فشل جلب سجلات المدارس من السيرفر.</td></tr>';
+            }
+        }
+
+        // 👑 دالة الاعتماد والتفعيل الفوري للمدرسة أونلاين بداخل السيرفر المركزي
+        async function approveSchoolAccount(schoolKey) {
+            if (!confirm("هل أنت متأكد من رغبتك في اعتماد وتفعيل حساب هذه المدرسة على السيرفر؟")) return;
+            try {
+                // تحديث حالة المدرسة مباشرة في قاعدة البيانات أونلاين لـ "تم التفعيل"
+                await set(ref(db, 'schools/' + schoolKey + '/status'), "تم التفعيل");
+                alert("🎯 تم تفعيل واعتماد المدرسة بنجاح، ويمكن لمديرها الدخول الآن!");
+                renderSchoolsData();
+            } catch (e) {
+                alert("❌ فشل إرسال أمر التفعيل للسيرفر.");
+            }
+        }
+
+        // تشغيل الدالة فور فتح الصفحة وجعلها متاحة للمتصفح
+        window.renderSchoolsData = renderSchoolsData;
+        window.approveSchoolAccount = approveSchoolAccount;
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            renderSchoolsData();
+        });
+
+    </script>
+</body>
+</html>
+

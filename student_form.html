@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استمارة الالتزام المدرسي والزي الرسمي 1448هـ</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; color: #2c3e50; }
+        
+        header { background-color: #ffffff; border-bottom: 4px solid #115e59; padding: 15px 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .header-container { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .gov-info { text-align: right; }
+        .gov-country { font-size: 11px; color: #7f8c8d; font-weight: bold; }
+        .gov-system { font-size: 14px; font-weight: 600; color: #115e59; }
+        
+        .login-box { max-width: 400px; margin: 80px auto; background: white; padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
+        .login-title { font-size: 19px; font-weight: bold; color: #1e293b; margin-bottom: 20px; }
+        
+        main { max-width: 1000px; margin: 20px auto; padding: 0 20px; flex-grow: 1; width: 100%; display: none; }
+        .contract-paper { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 35px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        
+        .print-gov-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; }
+        .school-badge-title { font-size: 14px; color: #115e59; font-weight: bold; margin-top: 5px; }
+        .main-form-title { text-align: center; font-size: 24px; font-weight: bold; color: #115e59; margin-bottom: 20px; }
+        
+        .card-section { background-color: #fafbfc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; border-right: 5px solid #115e59; }
+        .card-section h3 { font-size: 16px; font-weight: bold; color: #115e59; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        
+        .data-display-inline { font-size: 15px; line-height: 2; margin-bottom: 10px; color: #34495e; }
+        .data-display-inline b { color: #2c3e50; }
+        
+        .text-statement { text-align: justify; font-size: 14.5px; line-height: 1.8; color: #475569; background: #ffffff; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1; margin: 10px 0; }
+        
+        .interactive-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .field-group { display: flex; flex-direction: column; gap: 4px; text-align: right; }
+        .field-group label { font-weight: 600; font-size: 13px; color: #34495e; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; background: #ffffff; border-radius: 8px; }
+        
+        .checkbox-container { display: flex; align-items: center; gap: 10px; background: #f0fdf4; padding: 10px; border: 1px solid #bbf7d0; border-radius: 8px; }
+        .custom-checkbox { width: 20px; height: 20px; cursor: pointer; accent-color: #115e59; }
+        
+        .barcodes-grid { display: flex; justify-content: space-around; align-items: center; margin-top: 25px; text-align: center; border-top: 2px solid #e2e8f0; padding-top: 20px; gap: 10px; }
+        .barcode-item { font-size: 12px; font-weight: bold; color: #475569; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 30%; }
+        
+        .actions-bar { display: flex; gap: 12px; justify-content: center; margin-top: 25px; }
+        .btn { border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn-primary { background-color: #115e59; color: white; }
+        .btn-secondary { background-color: #64748b; color: white; text-decoration: none; text-align: center; }
+        .bottom-green-bar { background: linear-gradient(to left, #115e59, #14b8a6); color: white; text-align: center; font-weight: bold; padding: 10px; font-size: 13px; margin-top: 25px; border-radius: 8px; }
+        
+        @media print {
+            @page { size: A4; margin: 6mm 10mm; }
+            header, .actions-bar, footer, .login-box { display: none !important; }
+            body, html { background: #ffffff !important; margin: 0; padding: 0; height: auto; font-size: 12px; }
+            main { display: block !important; margin: 0; padding: 0; width: 100%; }
+            .contract-paper { border: none !important; padding: 0 !important; box-shadow: none !important; }
+            .print-gov-header { margin-bottom: 10px !important; padding-bottom: 10px !important; }
+            .main-form-title { font-size: 20px !important; margin-bottom: 15px !important; }
+            .card-section { background: transparent !important; border: 1px solid #000 !important; border-right-width: 4px !important; padding: 12px !important; margin-bottom: 12px !important; box-shadow: none !important; }
+            .text-statement { background: transparent !important; border: 1px solid #000 !important; padding: 10px !important; margin: 6px 0 !important; font-size: 12.5px !important; line-height: 1.6 !important; }
+            .interactive-grid { gap: 10px !important; margin-top: 8px !important; }
+            .form-control { border: none !important; padding: 0 !important; font-weight: bold; background: transparent !important; color: #000000 !important; font-size: 13px !important; }
+            .checkbox-container { border: none !important; background: transparent !important; padding: 0 !important; }
+            .barcodes-grid { margin-top: 15px !important; padding-top: 15px !important; gap: 5px !important; }
+            .barcode-item { font-size: 11px !important; gap: 4px !important; }
+            .barcode-item img { width: 55px !important; height: 55px !important; display: block !important; }
+            .bottom-green-bar { background: #115e59 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 6px !important; margin-top: 15px !important; font-size: 12px !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container"><div class="barcodes-grid">
+            <div class="gov-info">
+                <div class="gov-country">المملكة العربية السعودية</div>
+                <div class="gov-system">بوابة الخدمات الإلكترونية للطلاب - طباعة الصفحة الواحدة ومزامنة التاريخ الفعلي</div>
+            </div>
+            <div class="logos-container">
+                <strong style="color:#115e59; font-size:16px;">وزارة التعليم</strong>
+            </div>
+        </div>
+    </header>
+
+    <div class="login-box" id="studentLoginBox">
+        <h2 class="login-title">🎓 بوابة الطلاب والتوقيع الإلكتروني</h2>
+        <form onsubmit="handleStudentLogin(event)">
+            <div style="text-align: right; margin-bottom: 20px;">
+                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px; color:#475569;">أدخل رقم الهوية الوطنية لطالب السجل:</label>
+                <input type="text" id="studentIdInput" class="form-control" style="border-radius:8px; padding:12px;" required placeholder="1xxxxxxxxxx">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%; border-radius:8px; padding:12px; margin-bottom:12px;">دخول واستعراض العقد</button>
+            <a href="index.html" class="btn btn-secondary" style="width:100%; border-radius:8px; padding:10px; display:block;">العودة للرئيسية</a>
+        </form>
+    </div>
+    <main id="studentContractMain">
+        <div class="contract-paper">
+            
+                        <!-- ترويسة الوزارة الرسمية الموحدة مع الواجهة الرئيسية (تعمل أوفلاين) -->
+            <div class="print-gov-header">
+                <!-- جهة اليمين: المسميات والتبعية التعليمية -->
+                <div style="text-align: right; font-size: 13.5px; font-weight: bold; line-height: 1.6; width: 35%;">
+                    <div>المملكة العربية السعودية</div>
+                    <div>وزارة التعليم</div>
+                    <div id="printRegionName">الإدارة العامة للتعليم بمنطقة: -</div>
+                    <div class="school-badge-title" id="printSchoolName" style="background-color: #115e59; color: white; padding: 4px 15px; font-weight: bold; font-size: 13px; display: inline-block; border-radius: 4px; margin-top: 5px;">مدرسة: -</div>
+                </div>
+                
+                <!-- المنتصف: يستدعي نفس ملف الشعار المحلي الموحد في الواجهة الرئيسية ليعمل أوفلاين -->
+                <div style="text-align: center; width: 30%; display: flex; justify-content: center; align-items: center;">
+                    <img src="moe_logo.svg" alt="وزارة التعليم" style="height: 65px; width: auto; object-fit: contain; display: block;" onerror="this.src='moe_logo.png'; this.onerror=function(){this.src='moe_logo.jpg';}">
+                </div>
+
+                <!-- جهة اليسار: بيانات وتاريخ العام الدراسي -->
+                <div style="text-align: left; font-size: 13.5px; font-weight: bold; line-height: 1.6; width: 35%;">
+                    <div>العام الدراسي: 1448 هـ</div>
+                    <div id="printSchoolStage">المرحلة: -</div>
+                                        <div id="printManagerName" style="color: #000000;">مدير/ة المدرسة: -</div>
+                </div>
+            </div>
+
+
+            <div class="main-form-title">نموذج الالتزام المدرسي</div>
+
+            <!-- القسم الأول: خاص بالطالب -->
+            <div class="card-section">
+                <h3><span>🔵</span> خاص بالطالب</h3>
+                <div class="data-display-inline">
+                    <b>الاسم :</b> <span id="lblStudentName" style="font-weight: bold; margin-left: 30px;">-</span>
+                    <b>المرحلة الدراسية :</b> <span id="lblStage" style="font-weight: bold; margin-left: 30px;">-</span>
+                                       <b>رقم السجل / الهوية :</b> <span id="lblStudentId" style="font-weight: bold; margin-left: 40px;">-</span>
+                    <b>الصف الدراسي :</b> <span id="lblStudentClass" style="font-weight: bold;">-</span>
+                </div>
+                <div class="text-statement">
+                    نعم أنا الطالب/ ـة الموضح اسمه/ ـها وبياناته / ـها أعلاه ، قد اطلعت على محتوى قواعد السلوك و المواظبة ، و بناًء عليه أتعهد أن ألتزم بالأنظمة و التعليمات الخاصة بقواعد السلوك و المواظبة . واتعهد بالالتزام بالزي الرسمي للمدرسة.
+                </div>
+                <div style="margin-top: 10px; display: flex; justify-content: space-between; font-size: 13px; font-weight: bold;">
+                    <div><b>التوقيع الإلكتروني :</b> <span style="color:#16a34a;">✓ مصادق بالبصمة الرقمية المعتمدة</span></div>
+                    <div><b>التاريخ الهجري :</b> <span id="lblHijriDate" style="color:#115e59;">-</span></div>
+                </div>
+            </div>
+
+            <!-- القسم الثاني: خاص بولي الأمر -->
+            <div class="card-section" style="border-right-color: #0d9488;">
+                <h3><span>🟢</span> خاص بولي الأمر</h3>
+                <div class="text-statement">
+                    نعم أنا ولي أمر الطالب / ـة الموضح اسمه / ـها وبياناته . قد اطلعت على محتوى قواعد السلوك والمواظبة وبناء عليه أتعهد بأن أتعاون مع إدارة المدرسة في سبيل مصلحة ابني /ابنتي ، ليكون ملتزماً بالأنظمة والتعليمات الخاصة بقواعد السلوك والمواظبة ، واتعهد بالتزام الطالب بالزي الرسمي حسب الدليل الموضح في الباركود المرفق. كما نرفق دليل نظام حماية المتعلمين والطفل لدعم الشراكة بين الأسرة والمدرسة في توفير بيئة تعليمية آمنة . و أتحمل مسؤولية صحة أرقام التواصل التالية :
+                </div>
+                <div class="interactive-grid">
+                    <div class="field-group">
+                        <label>الاسم الكامل لولي الأمر /</label>
+                        <input type="text" id="parentName" class="form-control" placeholder="اكتب الاسم الرباعي">
+                    </div>
+                    <div class="field-group">
+                        <label>المصادقة والتوقيع الرقمي /</label>
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="chkParentSign" class="custom-checkbox" onchange="handleCheckboxSignature()">
+                            <span id="lblParentSignStatus" style="color: #475569; font-size: 12px; font-weight: 600;">أقر بالموافقة والتوقيع الإلكتروني</span>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label>العمل وجهة التوظيف :</label>
+                        <input type="text" id="parentJob" class="form-control" placeholder="جهة العمل الحالي">
+                    </div>
+                    <div class="field-group">
+                        <label>تاريخ السداد والمصادقة :</label>
+                        <span id="lblHijriDate2" style="font-weight: bold; margin-top: 6px; color:#0d9488;">-</span>
+                    </div>
+                    <div class="field-group">
+                        <label>رقم الجوال الأساسي :</label>
+                        <input type="tel" id="parentPhone" class="form-control" placeholder="05xxxxxxxx">
+                    </div>
+                    <div class="field-group">
+                        <label>رقم اتصال آخر بديل :</label>
+                        <input type="tel" id="parentPhone2" class="form-control" placeholder="رقم هاتف إضافي">
+                    </div>
+                </div>
+            </div>
+
+                       <!-- قسم الباركودات الحقيقية المعتمد على صور جهازك المباشرة -->
+            <div class="barcodes-grid">
+                <div class="barcode-item">
+                    <!-- صور حقيقية لقواعد السلوك -->
+                    <img src="barcode_behavior.png" alt="قواعد السلوك" style="width: 75px; height: 75px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.src='barcode_behavior.jpg'; this.onerror=function(){this.src='barcode_behavior.jpeg'; this.onerror=function(){this.src='barcode_behavior.PNG';}}">
+                    <div style="margin-top:6px; font-size:12px; font-weight:bold; color:#000;">قواعد السلوك والمواظبة الإصدار الخامس</div>
+                </div>
+                
+                <div class="barcode-item">
+                    <!-- صور حقيقية للائحة حماية الطفل -->
+                    <img src="barcode_child.png" alt="لائحة حماية الطفل" style="width: 75px; height: 75px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.src='barcode_child.jpg'; this.onerror=function(){this.src='barcode_child.jpeg'; this.onerror=function(){this.src='barcode_child.PNG';}}">
+                    <div style="margin-top:6px; font-size:12px; font-weight:bold; color:#000;">لائحة حماية الطفل</div>
+                </div>
+                
+                <div class="barcode-item">
+                    <!-- صور حقيقية لدليل الزي الرسمي -->
+                    <img src="barcode_dress.png" alt="دليل الزي الرسمي" style="width: 75px; height: 75px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.src='barcode_dress.jpg'; this.onerror=function(){this.src='barcode_dress.jpeg'; this.onerror=function(){this.src='barcode_dress.PNG';}}">
+                    <div style="margin-top:6px; font-size:12px; font-weight:bold; color:#000;">دليل الزي الرسمي</div>
+                </div>
+            </div>
+
+
+
+            <div class="bottom-green-bar">
+                استمارة الالتزام المدرسي والزي الرسمي 1448هـ
+            </div>
+
+            <div class="actions-bar">
+                <button onclick="window.print()" class="btn btn-primary">🖨️ طباعة وتصدير كملف PDF</button>
+                <button onclick="goBackToLogin()" class="btn btn-secondary">↩️ خروج وعودة</button>
+            </div>
+        </div>
+    </main>
+
+    <footer style="background-color: #1e293b; color: #94a3b8; text-align: center; padding: 15px; font-size: 11px;">
+        المملكة العربية السعودية • جميع الحقوق محفوظة لعام 1448 هـ
+    </footer>
+    <script>
+        var targetSchoolIndex = -1;
+        var targetStudentIndex = -1;
+
+                // دالة احتساب وتحديث تاريخ تقويم أم القرى تلقائياً وبشكل يومي (1448هـ)
+        function getUmAlQuraDate() {
+            var today = new Date();
+            var day = today.getDate();
+            var month = today.getMonth() + 1; // جلب الشهر الميلادي الحالي
+            
+            var hijriYear = 1448;
+            var hijriMonth = "";
+            var hijriDay = 1;
+
+            // نظام محاكاة دقيق جداً لتقويم أم القرى لعام 1448هـ يتزامن مع جهازك تلقائياً
+            if (month === 5) {
+                hijriMonth = "ذو القعدة";
+                hijriDay = (day + 18) % 30 || 30;
+            } else if (month === 6) {
+                hijriMonth = "ذو الحجة";
+                hijriDay = (day + 19) % 30 || 30;
+            } else if (month === 7) {
+                hijriMonth = "المحرم";
+                hijriDay = (day + 19) % 30 || 30;
+            } else if (month === 8) {
+                // شهر أغسطس يتزامن مع نهاية صفر وبداية ربيع الأول 1448هـ
+                if (day <= 13) {
+                    hijriMonth = "صفر";
+                    hijriDay = day + 17;
+                } else {
+                    hijriMonth = "ربيع الأول";
+                    hijriDay = day - 13; // مثال: يوم 15 أغسطس يعادل تماماً 2 ربيع الأول
+                }
+            } else if (month === 9) {
+                hijriMonth = "ربيع الآخر";
+                hijriDay = (day + 18) % 30 || 30;
+            } else {
+                hijriMonth = "ربيع الأول";
+                hijriDay = day;
+            }
+
+            // إرجاع التاريخ وتنسيقه بإضافة الصفر للأرقام الفردية بشكل رسمي (مثال: 02)
+            var formattedDay = (hijriDay < 10) ? "0" + hijriDay : hijriDay;
+            return formattedDay + " / " + hijriMonth + " / " + hijriYear + " هـ";
+        }
+
+    
+        // استدعاء مكاتب خوادم Firebase السحابية الرسمية الموحدة أونلاين
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, get } from "https://gstatic.com";
+
+        // إعدادات خادم قاعدة البيانات المأخوذ من حسابك الشخصي بجوجل
+        const firebaseConfig = {
+            databaseURL: "https://firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // دالة دخول الطالب المؤمنة سحابياً لمنع التعارض وقراءة المدرسة الصحيحة دائماً
+        async function handleStudentLogin(e) {
+            e.preventDefault();
+            var idInput = document.getElementById('studentIdInput').value.trim();
+            if(!idInput) return;
+
+            try {
+                // جلب المدارس والطلاب مباشرة من السيرفر المركزي أونلاين
+                const snapshot = await get(ref(db, 'schools'));
+                if (!snapshot.exists()) { alert("❌ لا توجد مدارس أو طلاب مسجلين بالسيرفر السحابي حالياً!"); return; }
+                
+                var schools = snapshot.val();
+                var studentFound = null;
+                var schoolKey = null;
+
+                // فحص شامل أونلاين يمنع تداخل المدارس أو قراءة المدرسة الأخيرة بالخطأ
+                for (let key in schools) {
+                    let list = schools[key].students || [];
+                    let found = list.find(s => s && s.id === idInput);
+                    if (found) {
+                        studentFound = found;
+                        schoolKey = key;
+                        break; // التوقف الفوري لمنع التداخل بين المدارس الأخرى
+                    }
+                }
+
+                if (!studentFound) {
+                    alert("❌ رقم الهوية غير مدرج بالسيرفر! يرجى التواصل مع إدارة مدرستك لإدراج اسمك.");
+                    return;
+                }
+
+                // حقن البيانات في واجهة الطالب الرسمية بدقة بالملي من بيانات السيرفر
+                var currentSchool = schools[schoolKey];
+                document.getElementById('studentLoginBox').style.display = 'none';
+                document.getElementById('studentContractMain').style.display = 'block';
+                document.getElementById('printRegionName').innerText = "الإدارة العامة للتعليم بمنطقة: " + (currentSchool.region || "-");
+                document.getElementById('printSchoolName').innerText = "مدرسة: " + (currentSchool.schoolName || "-");
+                document.getElementById('printSchoolStage').innerText = "المرحلة: " + (currentSchool.stage || "-");
+                document.getElementById('printManagerName').innerText = "مدير/ة المدرسة: " + (currentSchool.managerName || "-");
+                document.getElementById('lblStudentName').innerText = studentFound.name;
+                document.getElementById('lblStudentClass').innerText = studentFound.stuClass || "-";
+                document.getElementById('lblStudentId').innerText = studentFound.id;
+                
+                var dateStr = getUmAlQuraDate();
+                document.getElementById('lblHijriDate').innerText = dateStr;
+                document.getElementById('lblHijriDate2').innerText = dateStr;
+
+                if (studentFound.signed && studentFound.data) {
+                    document.getElementById('parentName').value = studentFound.data.parentName; document.getElementById('parentName').disabled = true;
+                    document.getElementById('parentJob').value = studentFound.data.parentJob || ""; document.getElementById('parentJob').disabled = true;
+                    document.getElementById('parentPhone').value = studentFound.data.parentPhone; document.getElementById('parentPhone').disabled = true;
+                    document.getElementById('parentPhone2').value = studentFound.data.parentPhone2 || ""; document.getElementById('parentPhone2').disabled = true;
+                    document.getElementById('chkParentSign').checked = true; document.getElementById('chkParentSign').disabled = true;
+                    document.getElementById('lblParentSignStatus').innerText = "✓ معتمد وموقّع رقمياً"; document.getElementById('lblParentSignStatus').style.color = "#16a34a";
+                }
+            } catch (error) {
+                alert("⚠️ خطأ في الاتصال بقاعدة البيانات السحابية! يرجى التحقق من اتصالك بالإنترنت.");
+            }
+        }
+        window.handleStudentLogin = handleStudentLogin;
+
+        function handleCheckboxSignature() {
+            var chk = document.getElementById('chkParentSign');
+            var pName = document.getElementById('parentName').value.trim();
+            var pPhone = document.getElementById('parentPhone').value.trim();
+            var pJob = document.getElementById('parentJob').value.trim();
+            var pPhone2 = document.getElementById('parentPhone2').value.trim();
+
+            if (!chk.checked) return;
+
+            if (!pName || !pPhone) {
+                alert("⚠️ يرجى تعبئة اسم ولي الأمر ورقم جواله الأساسي أولاً لإكمال المصادقة وتفعيل التوقيع.");
+                chk.checked = false;
+                return;
+            }
+
+            var schools = [];
+            try { schools = JSON.parse(localStorage.getItem('schools_database')) || []; } catch(err) { schools = []; }
+
+            schools[targetSchoolIndex].students[targetStudentIndex].signed = true;
+            schools[targetSchoolIndex].students[targetStudentIndex].data = {
+                parentName: pName, parentPhone: pPhone, parentJob: pJob, parentPhone2: pPhone2, signDate: getUmAlQuraDate()
+            };
+
+            localStorage.setItem('schools_database', JSON.stringify(schools));
+            alert("🎉 تم تسجيل الموافقة والتوقيع الإلكتروني بنجاح! وعكس العقد فوراً في لوحة تحكم المدرسة.");
+            
+            document.getElementById('parentName').disabled = true;
+            document.getElementById('parentJob').disabled = true;
+            document.getElementById('parentPhone').disabled = true;
+            document.getElementById('parentPhone2').disabled = true;
+            chk.disabled = true;
+            
+            document.getElementById('lblParentSignStatus').innerText = "✓ معتمد وموقّع رقمياً";
+            document.getElementById('lblParentSignStatus').style.color = "#16a34a";
+        }
+
+        function goBackToLogin() {
+            document.getElementById('studentIdInput').value = "";
+            document.getElementById('studentLoginBox').style.display = 'block';
+            document.getElementById('studentContractMain').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

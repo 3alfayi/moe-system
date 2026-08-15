@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الالتزام المدرسي والزي الرسمي 1448هـ</title>
+    <style>
+        /* التنسيقات الأساسية لعمل الموقع أوفلاين */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        /* الهيدر الوزاري */
+        header {
+            background-color: #ffffff;
+            border-bottom: 4px solid #059669;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 15px 30px;
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .gov-info {
+            text-align: right;
+        }
+        .gov-country {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .gov-ministry {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e293b;
+            margin: 2px 0;
+        }
+        .gov-system {
+            font-size: 14px;
+            font-weight: 600;
+            color: #059669;
+        }
+        /* حاوية الشعارات المحلية من مجلد جهازك */
+        .logos-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: #ffffff;
+            padding: 5px 10px;
+        }
+        .logo-img-moe {
+            height: 65px;
+            width: auto;
+            object-fit: contain;
+        }
+        .logo-img-vision {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+        .logo-divider {
+            width: 1px;
+            height: 40px;
+            background-color: #cbd5e1;
+        }
+        /* شريط الإرشادات */
+        .welcome-bar {
+            background: linear-gradient(to left, #047857, #115e59);
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+        }
+        /* البطاقات والمحتوى */
+        main {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex-grow: 1;
+            width: 100%;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 15px auto;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        .card-desc {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .card-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        /* بوابات الدخول */
+        .student-card { border-top: 4px solid #2563eb; }
+        .student-icon { background-color: #eff6ff; color: #2563eb; }
+        .student-btn { background-color: #2563eb; color: white; }
+        .student-btn:hover { background-color: #1d4ed8; }
+
+        .school-card { border-top: 4px solid #059669; }
+        .school-icon { background-color: #ecfdf5; color: #059669; }
+        .school-btn { background-color: #059669; color: white; }
+        .school-btn:hover { background-color: #047857; }
+
+        .register-card { border-top: 4px solid #7c3aed; }
+        .register-icon { background-color: #f5f3ff; color: #7c3aed; }
+        .register-btn { background-color: #7c3aed; color: white; }
+        .register-btn:hover { background-color: #6d28d9; }
+
+        .admin-card { border-top: 4px solid #d97706; }
+        .admin-icon { background-color: #fffbeb; color: #d97706; }
+        .admin-btn { background-color: #d97706; color: white; }
+        .admin-btn:hover { background-color: #b45309; }
+
+        footer {
+            background-color: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- هيدر يستدعي صورك المحلية بامتداداتها المحدثة -->
+    <header>
+        <div class="header-container">
+            <div class="gov-info">
+                <div class="gov-country">المملكة العربية السعودية</div>
+                <div class="gov-ministry">وزارة التعلـيـم</div>
+                <div class="gov-system">نظام الالتزام المدرسي والزي الرسمي 1448هـ</div>
+            </div>
+            
+            <div class="logos-container">
+                <!-- قراءة الملف بامتداد .svg من جهازك مباشرة -->
+                <img src="moe_logo.svg" alt="شعار وزارة التعليم" class="logo-img-moe" onerror="this.src='moe_logo.png';">
+                <div class="logo-divider"></div>
+                <!-- قراءة الملف بامتداد .png من جهازك مباشرة -->
+                <img src="vision_logo.png" alt="شعار رؤية 2030" class="logo-img-vision" onerror="this.src='vision_logo.jpg';">
+            </div>
+        </div>
+    </header>
+
+    <div class="welcome-bar">
+        🇸🇦 <strong>منصة الشراكة الرقمية:</strong> نظام متكامل لتسهيل إجراءات قواعد السلوك والمواظبة ودليل الزي المدرسي المعتمد.
+    </div>
+
+    <main>
+        <div class="grid-container">
+            
+            <div class="card student-card">
+                <div>
+                    <div class="card-icon student-icon">🎓</div>
+                    <div class="card-title">بوابة الطلاب</div>
+                    <div class="card-desc">الدخول السريع بواسطة رقم الهوية الوطنية لتعبئة وتوقيع نموذج الالتزام المدرسي والاطلاع على الأنظمة إلكترونياً.</div>
+                </div>
+                <a href="student_form.html" class="card-btn student-btn">دخول الطالب</a>
+            </div>
+
+            <div class="card school-card">
+                <div>
+                    <div class="card-icon school-icon">💼</div>
+                    <div class="card-title">بوابة مدراء المدارس</div>
+                    <div class="card-desc">تسجيل الدخول الآمن لإدارة ملفات المدرسة، إضافة وتعديل قوائم الطلاب، ومتابعة حالة العقود الموقعة.</div>
+                </div>
+                <a href="school_dashboard.html" class="card-btn school-btn">دخول مدير المدرسة</a>
+            </div>
+
+            <div class="card register-card">
+                <div>
+                    <div class="card-icon register-icon">🏫</div>
+                    <div class="card-title">تسجيل مدرسة جديدة</div>
+                    <div class="card-desc">تأسيس حساب جديد للمدرسة في النظام وتعبئة البيانات الأساسية ورفع إيصال رسوم التفعيل المعتمدة للمراجعة.</div>
+                </div>
+                <a href="register_school.html" class="card-btn register-btn">تسجيل حساب مدرسة</a>
+            </div>
+
+            <div class="card admin-card">
+                <div>
+                    <div class="card-icon admin-icon">🛠️</div>
+                    <div class="card-title">لوحة الإشراف (الآدمن)</div>
+                    <div class="card-desc">بوابة الرقابة والاعتماد الخاصة بإدارة الموقع العام لمراجعة طلبات المدارس وتدقيق الحسابات البنكية للتفعيل.</div>
+                </div>
+                <a href="admin.html" class="card-btn admin-btn">دخول الإدارة</a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        المملكة العربية السعودية • جميع الحقوق محفوظة لنظام الالتزام المدرسي 1448 هـ
+    </footer>
+
+    <script>
+        if(!localStorage.getItem('admin_user')) {
+            localStorage.setItem('admin_user', JSON.stringify({username: 'admin', password: '123'}));
+        }
+    </script>
+</body>
+</html>
