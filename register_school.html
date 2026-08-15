@@ -7,193 +7,143 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
-        
-        /* الهيدر الرسمي الموحد */
         header { background-color: #ffffff; border-bottom: 4px solid #059669; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 15px 30px; }
-        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .gov-info { text-align: right; }
-        .gov-country { font-size: 12px; color: #64748b; font-weight: 600; }
-        .gov-ministry { font-size: 20px; font-weight: bold; color: #1e293b; margin: 2px 0; }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .gov-ministry { font-size: 20px; font-weight: bold; color: #1e293b; }
         .gov-system { font-size: 14px; font-weight: 600; color: #059669; }
-        .logos-container { display: flex; align-items: center; gap: 20px; background-color: #ffffff; padding: 5px 10px; }
-        .logo-img-moe { height: 65px; width: auto; object-fit: contain; }
-        .logo-img-vision { height: 45px; width: auto; object-fit: contain; }
-        .logo-divider { width: 1px; height: 40px; background-color: #cbd5e1; }
-
-        /* حاوية الاستمارة */
-        main { max-width: 800px; margin: 30px auto; padding: 0 20px; flex-grow: 1; width: 100%; }
-        .form-container { background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .form-title { font-size: 22px; font-weight: bold; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
-        
-        /* التنبيهات الصارمة */
-        .alert-danger { background-color: #fef2f2; border-right: 4px solid #ef4444; color: #991b1b; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 15px; }
-        .bank-info { background-color: #f0fdf4; border: 1px dashed #22c55e; color: #14532d; padding: 15px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; }
-        .bank-account { font-family: monospace; font-size: 16px; font-weight: bold; color: #166534; display: block; margin-top: 5px; text-align: left; direction: ltr; }
-
-        /* عناصر الإدخال */
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; transition: border 0.2s; }
-        .form-control:focus { border-color: #059669; box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1); }
-        
-        /* الأزرار */
-        .btn-submit { background-color: #059669; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        .btn-submit:hover { background-color: #047857; }
-        .btn-back { display: block; text-align: center; margin-top: 15px; color: #64748b; font-size: 13px; text-decoration: none; }
-        .btn-back:hover { color: #1e293b; }
+        .reg-box { max-width: 500px; margin: 40px auto; background: white; padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .reg-title { font-size: 20px; font-weight: bold; color: #1e293b; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; }
+        .btn { width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
+        .btn-success { background-color: #059669; color: white; }
     </style>
+    <!-- استدعاء مكاتب خوادم Firebase الصافية الرسمية لتخطي حظر المتصفحات أونلاين -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
 </head>
 <body>
 
-    <!-- الهيدر الرسمي الموحد -->
     <header>
         <div class="header-container">
-            <div class="gov-info">
-                <div class="gov-country">المملكة العربية السعودية</div>
+            <div>
                 <div class="gov-ministry">وزارة التعلـيـم</div>
-                <div class="gov-system">نظام الالتزام المدرسي والزي الرسمي 1448هـ</div>
-            </div>
-            <div class="logos-container">
-                <img src="moe_logo.svg" alt="وزارة التعليم" class="logo-img-moe" onerror="this.src='moe_logo.png';">
-                <div class="logo-divider"></div>
-                <img src="vision_logo.png" alt="رؤية 2030" class="logo-img-vision" onerror="this.src='vision_logo.jpg';">
+                <div class="gov-system">بوابة تسجيل المدارس الجديدة</div>
             </div>
         </div>
     </header>
 
-    <!-- استمارة التسجيل -->
-    <main>
-        <div class="form-container">
-            <h2 class="form-title">طلب تسجيل حساب مدرسة جديدة</h2>
-            
-            <!-- التنبيه الحاسم الخاص بكلمة السر -->
-            <div class="alert-danger">
-                ⚠️ تنبيه هام جداً: كلمة السر المدخلة لا يمكن تغييرها نهائياً وستبقى ثابتة كما هي حتى في حال نسيانها! يرجى كتابتها وحفظها في مكان آمن.
+    <div class="reg-box">
+        <h2 class="reg-title">📝 طلب تسجيل مدرسة جديدة بالمنظومة</h2>
+        <!-- تم تنظيف الفورم تماماً وحذف الـ onsubmit المسبب للتصفير الفجائي -->
+        <form id="registrationForm" onsubmit="return false;">
+            <div class="form-group">
+                <label>المنطقة التعليمية بوزارة التعليم:</label>
+                <input type="text" id="eduRegion" class="form-control" required placeholder="مثال: منطقة عسير">
             </div>
-
-            <!-- معلومات السداد البنكي ورقم الحساب -->
-            <div class="bank-info">
-                ℹ️ <strong>شروط تفعيل الحساب:</strong> لتفعيل الخدمة واعتماد الحساب من قبل إدارة الموقع، يرجى تحويل مبلغ <strong>40 ريال سعودي</strong> إلى حساب مصرف الراجحي التالي وإرفاق صورة الإيصال أدناه:
-                <span class="bank-account">SA2280000437608016117908</span>
+            <div class="form-group">
+                <label>اسم المدرسة:</label>
+                <input type="text" id="schoolName" class="form-control" required placeholder="مثال: مدرسة الفهد الثانوية">
             </div>
-
-            <form id="registrationForm" onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label>الإدارة العامة للتعليم بمنطقة:</label>
-                    <input type="text" class="form-control" id="eduRegion" required placeholder="مثال: منطقة عسير">
-                </div>
-                <div class="form-group">
-                    <label>اسم المدرسة:</label>
-                    <input type="text" class="form-control" id="schoolName" required placeholder="مثال: مدرسة الفهد الثانوية">
-                </div>
-                <div class="form-group">
-                    <label>المرحلة الدراسية:</label>
-                    <select class="form-control" id="schoolStage" required>
-                        <option value="">اختر المرحلة...</option>
-                        <option value="الابتدائية">الابتدائية</option>
-                        <option value="المتوسطة">المتوسطة</option>
-                        <option value="الثانوية">الثانوية</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>اسم مدير المدرسة:</label>
-                    <input type="text" class="form-control" id="managerName" required placeholder="الاسم الفعلي الثلاثي">
-                </div>
-                <div class="form-group">
-                    <label>رقم جوال المدير:</label>
-                    <input type="tel" class="form-control" id="managerPhone" required placeholder="05xxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label>البريد الإلكتروني (سيستخدم لتسجيل الدخول):</label>
-                    <input type="email" class="form-control" id="schoolEmail" required placeholder="school@example.com">
-                </div>
-                <div class="form-group">
-                    <label>كلمة السر (ثابتة لا تتغير):</label>
-                    <input type="password" class="form-control" id="schoolPassword" required placeholder="أدخل كلمة مرور قوية">
-                </div>
-                <div class="form-group">
-                    <label>إرفاق صورة إيصال التحويل البنكي (40 ريال):</label>
-                    <input type="file" class="form-control" id="receiptFile" accept="image/*" required>
-                </div>
-
-                <button type="submit" class="btn-submit">إرسال الطلب للاعتماد</button>
-                <a href="index.html" class="btn-back">العودة للرئيسية</a>
-            </form>
-        </div>
-    </main>
-
-    <footer style="background-color: #1e293b; color: #94a3b8; text-align: center; padding: 15px; font-size: 12px;">
-        المملكة العربية السعودية • جميع الحقوق محفوظة لنظام الالتزام المدرسي 1448 هـ
-    </footer>
+            <div class="form-group">
+                <label>المرحلة الدراسية:</label>
+                <select id="schoolStage" class="form-control" required>
+                    <option value="">اختر المرحلة...</option>
+                    <option value="الابتدائية">الابتدائية</option>
+                    <option value="المتوسطة">المتوسطة</option>
+                    <option value="الثانوية">الثانوية</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>اسم مدير المدرسة:</label>
+                <input type="text" id="managerName" class="form-control" required placeholder="الاسم الثلاثي الكامل">
+            </div>
+            <div class="form-group">
+                <label>رقم جوال المدير:</label>
+                <input type="tel" id="managerPhone" class="form-control" required placeholder="05xxxxxxxx">
+            </div>
+            <div class="form-group">
+                <label>البريد الإلكتروني (سيستخدم لتسجيل الدخول):</label>
+                <input type="email" id="schoolEmail" class="form-control" required placeholder="school@example.com">
+            </div>
+            <div class="form-group">
+                <label>كلمة السر (ثابتة لا تتغير):</label>
+                <input type="password" id="schoolPassword" class="form-control" required placeholder="أدخل كلمة مرور قوية">
+            </div>
+            <div class="form-group">
+                <label>إرفاق صورة إيصال سداد رسوم التفعيل (40 ريال):</label>
+                <input type="file" id="regReceipt" class="form-control" accept="image/*" required>
+            </div>
+            <!-- تم سحب الصلاحية من الـ submit وحقن الكود بالماوس لمنع الـ Refresh نهائياً -->
+            <button type="button" id="btnSubmitForm" class="btn btn-success">إرسال طلب التسجيل أونلاين</button>
+            <a href="index.html" style="display:block; text-align:center; margin-top:15px; color:#64748b; font-size:12px; text-decoration:none;">العودة للرئيسية</a>
+        </form>
+    </div>
 
     <script>
-        // استدعاء مكاتب خوادم Firebase السحابية لربط واجهة التسجيل أونلاين
-        import { initializeApp } from "https://gstatic.com";
-        import { getDatabase, ref, push, set } from "https://gstatic.com";
-
-        // إعدادات خادم قاعدة البيانات المركزي الخاص بك
+        // تهيئة السيرفر السحابي الموحد الخاص بك
         const firebaseConfig = {
             databaseURL: "https://firebaseio.com"
         };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        document.addEventListener("DOMContentLoaded", function() {
+            var btn = document.getElementById('btnSubmitForm');
+            if (btn) {
+                btn.onclick = function(e) {
+                    if(e) e.preventDefault();
 
-        // دالة إرسال وحفظ بيانات المدرسة الجديدة مباشرة بداخل السيرفر أونلاين
-        async function handleRegister(e) {
-            e.preventDefault();
-            
-            var sName = document.getElementById('regSchoolName').value.trim();
-            var email = document.getElementById('regEmail').value.trim();
-            var pass = document.getElementById('regPass').value.trim();
-            var mName = document.getElementById('regManagerName').value.trim();
-            var phone = document.getElementById('regPhone').value.trim();
-            var stage = document.getElementById('regStage').value;
-            var region = document.getElementById('regRegion').value;
-            var receiptInput = document.getElementById('regReceipt');
+                    var sName = document.getElementById('schoolName').value.trim();
+                    var email = document.getElementById('schoolEmail').value.trim();
+                    var pass = document.getElementById('schoolPassword').value.trim();
+                    var mName = document.getElementById('managerName').value.trim();
+                    var phone = document.getElementById('managerPhone').value.trim();
+                    var stage = document.getElementById('schoolStage').value;
+                    var region = document.getElementById('eduRegion').value;
+                    var receiptInput = document.getElementById('regReceipt'); 
 
-            // تحويل صورة إيصال السداد لشفرة نصية خفيفة لحفظها بالسيرفر الموحد
-            var receiptData = "";
-            if (receiptInput.files && receiptInput.files[0]) {
-                var reader = new FileReader();
-                reader.readAsDataURL(receiptInput.files[0]);
-                reader.onload = async function () {
-                    receiptData = reader.result;
-                    await sendDataToFirebase();
-                };
-            } else {
-                await sendDataToFirebase();
-            }
+                    if (!sName || !email || !pass || !mName || !phone || !stage || !region) {
+                        alert("⚠️ يرجى تعبئة كافة الحقول المطلوبة أولاً قبل الإرسال!");
+                        return;
+                    }
 
-            // دالة الحقن الفوري بداخل تفرعات السيرفر السحابي
-            async function sendDataToFirebase() {
-                try {
-                    // إنشاء معرف فريد (Unique Key) لكل مدرسة جديدة تسجل بالسيرفر
-                    var newSchoolRef = push(ref(db, 'schools'));
-                    
-                    var schoolObject = {
-                        schoolName: sName,
-                        email: email,
-                        password: pass,
-                        managerName: mName,
-                        phone: phone,
-                        stage: stage,
-                        region: region,
-                        status: "بانتظار الاعتماد",
-                        receipt: receiptData,
-                        students: []
+                    if (!receiptInput.files || receiptInput.files.length === 0) {
+                        alert("⚠️ يرجى إرفاق صورة إيصال السداد أولاً!");
+                        return;
+                    }
+
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        var receiptData = reader.result;
+                        sendToFirebase(sName, email, pass, mName, phone, stage, region, receiptData);
                     };
-
-                    await set(newSchoolRef, schoolObject);
-                    alert("🎉 تم إرسال طلب تسجيل مدرستكم بنجاح للسيرفر السحابي!\n\nيرجى الانتظار لحين مراجعة وتفعيل الحساب من قبل المشرف العام (الآدمن).");
-                    window.location.href = "index.html";
-                } catch (error) {
-                    alert("❌ فشل إرسال البيانات للسيرفر! تحقق من اتصالك بالإنترنت.");
-                }
+                    reader.readAsDataURL(receiptInput.files[0]);
+                };
             }
-        }
-        window.handleRegister = handleRegister;
+        });
 
+        function sendToFirebase(sName, email, pass, mName, phone, stage, region, receiptData) {
+            var newSchoolRef = db.ref('schools').push();
+            newSchoolRef.set({
+                schoolName: sName,
+                email: email,
+                password: pass,
+                managerName: mName,
+                phone: phone,
+                stage: stage,
+                region: region,
+                status: "بانتظار الاعتماد",
+                receipt: receiptData,
+                students: []
+            }).then(() => {
+                alert("🎉 تم إرسال طلب تسجيل مدرستكم بنجاح للسيرفر السحابي أونلاين!\n\nيرجى الانتظار لحين التفعيل من قبل الآدمن.");
+                window.location.href = "index.html";
+            }).catch((error) => {
+                alert("❌ فشل الاتصال بالسيرفر السحابي! تأكد من إعدادات الـ Rules بـ Firebase.");
+            });
+        }
     </script>
 </body>
 </html>
