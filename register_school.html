@@ -36,7 +36,6 @@
 
     <div class="reg-box">
         <h2 class="reg-title">📝 طلب تسجيل مدرسة جديدة بالمنظومة</h2>
-        <!-- تم تنظيف الفورم تماماً وحذف الـ onsubmit المسبب للتصفير الفجائي -->
         <form id="registrationForm" onsubmit="return false;">
             <div class="form-group">
                 <label>المنطقة التعليمية بوزارة التعليم:</label>
@@ -75,14 +74,13 @@
                 <label>إرفاق صورة إيصال سداد رسوم التفعيل (40 ريال):</label>
                 <input type="file" id="regReceipt" class="form-control" accept="image/*" required>
             </div>
-            <!-- تم سحب الصلاحية من الـ submit وحقن الكود بالماوس لمنع الـ Refresh نهائياً -->
             <button type="button" id="btnSubmitForm" class="btn btn-success">إرسال طلب التسجيل أونلاين</button>
             <a href="index.html" style="display:block; text-align:center; margin-top:15px; color:#64748b; font-size:12px; text-decoration:none;">العودة للرئيسية</a>
         </form>
     </div>
 
     <script>
-        // تهيئة السيرفر السحابي الموحد الخاص بك
+        // تم ضبط الرابط الصافي والمطابق لصورتك بالملي بدون أي زيادة أو نقصان لفتح الاتصال مباشرة
         const firebaseConfig = {
             databaseURL: "https://firebaseio.com"
         };
@@ -119,14 +117,13 @@
                         var receiptData = reader.result;
                         sendToFirebase(sName, email, pass, mName, phone, stage, region, receiptData);
                     };
-                    reader.readAsDataURL(receiptInput.files[0]);
+                    reader.readAsDataURL(receiptInput.files);
                 };
             }
         });
 
         function sendToFirebase(sName, email, pass, mName, phone, stage, region, receiptData) {
-            var newSchoolRef = db.ref('schools').push();
-            newSchoolRef.set({
+            db.ref('schools').push().set({
                 schoolName: sName,
                 email: email,
                 password: pass,
@@ -141,7 +138,7 @@
                 alert("🎉 تم إرسال طلب تسجيل مدرستكم بنجاح للسيرفر السحابي أونلاين!\n\nيرجى الانتظار لحين التفعيل من قبل الآدمن.");
                 window.location.href = "index.html";
             }).catch((error) => {
-                alert("❌ فشل الاتصال بالسيرفر السحابي! تأكد من إعدادات الـ Rules بـ Firebase.");
+                alert("❌ فشل الاتصال بالسيرفر السحابي! تحقق من اتصال الإنترنت وقواعد الحماية.");
             });
         }
     </script>
