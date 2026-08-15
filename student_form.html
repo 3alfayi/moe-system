@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script src="https://gstatic.com"></script>
+<script src="https://gstatic.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>استمارة الالتزام المدرسي والزي الرسمي 1448هـ</title>
@@ -262,78 +264,56 @@
         }
 
     
-        // استدعاء مكاتب خوادم Firebase السحابية الرسمية الموحدة أونلاين
-        import { initializeApp } from "https://gstatic.com";
-        import { getDatabase, ref, get } from "https://gstatic.com";
+           function handleStudentLogin(e) {
+    if (e) e.preventDefault();
+    var idInput = document.getElementById('studentIdInput').value.trim();
+    if (!idInput) return;
 
-        // إعدادات خادم قاعدة البيانات المأخوذ من حسابك الشخصي بجوجل
-        const firebaseConfig = {
-            databaseURL: "https://firebaseio.com"
-        };
+    var db = firebase.database();
+    db.ref('schools').get().then((snapshot) => {
+        if (!snapshot.exists()) { alert("❌ لا توجد بيانات بالسيرفر!"); return; }
+        
+        var schools = snapshot.val();
+        var studentFound = null;
+        var schoolKey = null;
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // دالة دخول الطالب المؤمنة سحابياً لمنع التعارض وقراءة المدرسة الصحيحة دائماً
-        async function handleStudentLogin(e) {
-            e.preventDefault();
-            var idInput = document.getElementById('studentIdInput').value.trim();
-            if(!idInput) return;
-
-            try {
-                // جلب المدارس والطلاب مباشرة من السيرفر المركزي أونلاين
-                const snapshot = await get(ref(db, 'schools'));
-                if (!snapshot.exists()) { alert("❌ لا توجد مدارس أو طلاب مسجلين بالسيرفر السحابي حالياً!"); return; }
-                
-                var schools = snapshot.val();
-                var studentFound = null;
-                var schoolKey = null;
-
-                // فحص شامل أونلاين يمنع تداخل المدارس أو قراءة المدرسة الأخيرة بالخطأ
-                for (let key in schools) {
-                    let list = schools[key].students || [];
-                    let found = list.find(s => s && s.id === idInput);
-                    if (found) {
-                        studentFound = found;
-                        schoolKey = key;
-                        break; // التوقف الفوري لمنع التداخل بين المدارس الأخرى
-                    }
-                }
-
-                if (!studentFound) {
-                    alert("❌ رقم الهوية غير مدرج بالسيرفر! يرجى التواصل مع إدارة مدرستك لإدراج اسمك.");
-                    return;
-                }
-
-                // حقن البيانات في واجهة الطالب الرسمية بدقة بالملي من بيانات السيرفر
-                var currentSchool = schools[schoolKey];
-                document.getElementById('studentLoginBox').style.display = 'none';
-                document.getElementById('studentContractMain').style.display = 'block';
-                document.getElementById('printRegionName').innerText = "الإدارة العامة للتعليم بمنطقة: " + (currentSchool.region || "-");
-                document.getElementById('printSchoolName').innerText = "مدرسة: " + (currentSchool.schoolName || "-");
-                document.getElementById('printSchoolStage').innerText = "المرحلة: " + (currentSchool.stage || "-");
-                document.getElementById('printManagerName').innerText = "مدير/ة المدرسة: " + (currentSchool.managerName || "-");
-                document.getElementById('lblStudentName').innerText = studentFound.name;
-                document.getElementById('lblStudentClass').innerText = studentFound.stuClass || "-";
-                document.getElementById('lblStudentId').innerText = studentFound.id;
-                
-                var dateStr = getUmAlQuraDate();
-                document.getElementById('lblHijriDate').innerText = dateStr;
-                document.getElementById('lblHijriDate2').innerText = dateStr;
-
-                if (studentFound.signed && studentFound.data) {
-                    document.getElementById('parentName').value = studentFound.data.parentName; document.getElementById('parentName').disabled = true;
-                    document.getElementById('parentJob').value = studentFound.data.parentJob || ""; document.getElementById('parentJob').disabled = true;
-                    document.getElementById('parentPhone').value = studentFound.data.parentPhone; document.getElementById('parentPhone').disabled = true;
-                    document.getElementById('parentPhone2').value = studentFound.data.parentPhone2 || ""; document.getElementById('parentPhone2').disabled = true;
-                    document.getElementById('chkParentSign').checked = true; document.getElementById('chkParentSign').disabled = true;
-                    document.getElementById('lblParentSignStatus').innerText = "✓ معتمد وموقّع رقمياً"; document.getElementById('lblParentSignStatus').style.color = "#16a34a";
-                }
-            } catch (error) {
-                alert("⚠️ خطأ في الاتصال بقاعدة البيانات السحابية! يرجى التحقق من اتصالك بالإنترنت.");
-            }
+        for (let key in schools) {
+            let list = schools[key].students || [];
+            let found = list.find(s => s && s.id === idInput);
+            if (found) { studentFound = found; schoolKey = key; break; }
         }
-        window.handleStudentLogin = handleStudentLogin;
+
+        if (!studentFound) {
+            alert("❌ رقم الهوية غير مدرج بالسيرفر!");
+            return;
+        }
+
+        var currentSchool = schools[schoolKey];
+        document.getElementById('studentLoginBox').style.display = 'none';
+        document.getElementById('studentContractMain').style.display = 'block';
+        document.getElementById('printRegionName').innerText = "الإدارة العامة للتعليم بمنطقة: " + (currentSchool.region || "-");
+        document.getElementById('printSchoolName').innerText = "مدرسة: " + (currentSchool.schoolName || "-");
+        document.getElementById('printSchoolStage').innerText = "المرحلة: " + (currentSchool.stage || "-");
+        document.getElementById('printManagerName').innerText = "مدير/ة المدرسة: " + (currentSchool.managerName || "-");
+        document.getElementById('lblStudentName').innerText = studentFound.name;
+        document.getElementById('lblStudentClass').innerText = studentFound.stuClass || "-";
+        document.getElementById('lblStudentId').innerText = studentFound.id;
+        
+        var dateStr = typeof getUmAlQuraDate === 'function' ? getUmAlQuraDate() : "-";
+        document.getElementById('lblHijriDate').innerText = dateStr;
+        document.getElementById('lblHijriDate2').innerText = dateStr;
+
+        if (studentFound.signed && studentFound.data) {
+            document.getElementById('parentName').value = studentFound.data.parentName; document.getElementById('parentName').disabled = true;
+            document.getElementById('parentJob').value = studentFound.data.parentJob || ""; document.getElementById('parentJob').disabled = true;
+            document.getElementById('parentPhone').value = studentFound.data.parentPhone; document.getElementById('parentPhone').disabled = true;
+            document.getElementById('parentPhone2').value = studentFound.data.parentPhone2 || ""; document.getElementById('parentPhone2').disabled = true;
+            document.getElementById('chkParentSign').checked = true; document.getElementById('chkParentSign').disabled = true;
+            document.getElementById('lblParentSignStatus').innerText = "✓ معتمد وموقّع رقمياً"; document.getElementById('lblParentSignStatus').style.color = "#16a34a";
+        }
+    }).catch((error) => { alert("⚠️ خطأ في الاتصال بقاعدة البيانات السحابية!"); });
+}
+
 
         function handleCheckboxSignature() {
             var chk = document.getElementById('chkParentSign');
