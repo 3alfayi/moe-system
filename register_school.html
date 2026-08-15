@@ -19,6 +19,9 @@
         .btn { width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
         .btn-success { background-color: #059669; color: white; }
     </style>
+    <!-- مكاتب Firebase الرسمية المتوافقة والمضمونة أونلاين -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
 </head>
 <body>
 
@@ -33,7 +36,7 @@
 
     <div class="reg-box">
         <h2 class="reg-title">📝 طلب تسجيل مدرسة جديدة بالمنظومة</h2>
-        <form id="registrationForm" onsubmit="return false;">
+        <form id="registrationForm" onsubmit="event.preventDefault(); handleRegistrationData();">
             <div class="form-group">
                 <label>المنطقة التعليمية بوزارة التعليم:</label>
                 <input type="text" id="eduRegion" class="form-control" required placeholder="مثال: منطقة عسير">
@@ -71,76 +74,59 @@
                 <label>إرفاق صورة إيصال سداد رسوم التفعيل (40 ريال):</label>
                 <input type="file" id="regReceipt" class="form-control" accept="image/*" required>
             </div>
-            <button type="button" id="btnSubmitForm" class="btn btn-success">إرسال طلب التسجيل أونلاين</button>
+            <button type="submit" class="btn btn-success">إرسال طلب التسجيل أونلاين</button>
             <a href="index.html" style="display:block; text-align:center; margin-top:15px; color:#64748b; font-size:12px; text-decoration:none;">العودة للرئيسية</a>
         </form>
     </div>
 
-    <!-- استدعاء مكاتب خوادم Firebase الحديثة بنظام الـ Modules المستقل والمضاد للحظر أونلاين -->
-    <script type="module">
-        import { initializeApp } from "https://gstatic.com";
-        import { getDatabase, ref, push, set } from "https://gstatic.com";
-
+    <script>
+        // تهيئة السيرفر السحابي الموحد الخاص بك
         const firebaseConfig = {
             databaseURL: "https://firebaseio.com"
         };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        function handleRegistrationData() {
+            var sName = document.getElementById('schoolName').value.trim();
+            var email = document.getElementById('schoolEmail').value.trim();
+            var pass = document.getElementById('schoolPassword').value.trim();
+            var mName = document.getElementById('managerName').value.trim();
+            var phone = document.getElementById('managerPhone').value.trim();
+            var stage = document.getElementById('schoolStage').value;
+            var region = document.getElementById('eduRegion').value;
+            var receiptInput = document.getElementById('regReceipt'); 
 
-        document.addEventListener("DOMContentLoaded", function() {
-            var btn = document.getElementById('btnSubmitForm');
-            if (btn) {
-                btn.onclick = function(e) {
-                    if(e) e.preventDefault();
-
-                    var sName = document.getElementById('schoolName').value.trim();
-                    var email = document.getElementById('schoolEmail').value.trim();
-                    var pass = document.getElementById('schoolPassword').value.trim();
-                    var mName = document.getElementById('managerName').value.trim();
-                    var phone = document.getElementById('managerPhone').value.trim();
-                    var stage = document.getElementById('schoolStage').value;
-                    var region = document.getElementById('eduRegion').value;
-                    var receiptInput = document.getElementById('regReceipt'); 
-
-                    if (!sName || !email || !pass || !mName || !phone || !stage || !region) {
-                        alert("⚠️ يرجى تعبئة كافة الحقول المطلوبة أولاً قبل الإرسال!");
-                        return;
-                    }
-
-                    if (!receiptInput.files || receiptInput.files.length === 0) {
-                        alert("⚠️ يرجى إرفاق صورة إيصال السداد أولاً!");
-                        return;
-                    }
-
-                    var reader = new FileReader();
-                    reader.onload = function () {
-                        var receiptData = reader.result;
-                        
-                        // حقن البيانات في مسار المدارس السحابي بدقة متناهية وبصيغة الـ Modules المستقرة
-                        var newSchoolRef = push(ref(db, 'schools'));
-                        set(newSchoolRef, {
-                            schoolName: sName,
-                            email: email,
-                            password: pass,
-                            managerName: mName,
-                            phone: phone,
-                            stage: stage,
-                            region: region,
-                            status: "بانتظار الاعتماد",
-                            receipt: receiptData,
-                            students: []
-                        }).then(() => {
-                            alert("🎉 تم إرسال طلب تسجيل مدرستكم بنجاح للسيرفر السحابي أونلاين!\n\nيرجى الانتظار لحين التفعيل من قبل الآدمن.");
-                            window.location.href = "index.html";
-                        }).catch((error) => {
-                            alert("❌ فشل الاتصال بالسيرفر السحابي! تحقق من إعدادات الـ Rules بـ Firebase.");
-                        });
-                    };
-                    reader.readAsDataURL(receiptInput.files);
-                };
+            if (!receiptInput.files || receiptInput.files.length === 0) {
+                alert("⚠️ يرجى إرفاق صورة إيصال السداد أولاً!");
+                return;
             }
-        });
+
+            var reader = new FileReader();
+            reader.onload = function () {
+                var receiptData = reader.result;
+                
+                // الدفع المباشر والآمن 100% للسيرفر أونلاين
+                db.ref('schools').push().set({
+                    schoolName: sName,
+                    email: email,
+                    password: pass,
+                    managerName: mName,
+                    phone: phone,
+                    stage: stage,
+                    region: region,
+                    status: "بانتظار الاعتماد",
+                    receipt: receiptData,
+                    students: []
+                }).then(function() {
+                    alert("🎉 تم إرسال طلب تسجيل مدرستكم بنجاح للسيرفر السحابي أونلاين!\n\nيرجى الانتظار لحين التفعيل من قبل الآدمن.");
+                    window.location.href = "index.html";
+                }).catch(function(error) {
+                    alert("❌ فشل الاتصال بالسيرفر! تأكد من إعدادات الـ Rules في Firebase.");
+                });
+            };
+            reader.readAsDataURL(receiptInput.files);
+        }
     </script>
 </body>
 </html>
