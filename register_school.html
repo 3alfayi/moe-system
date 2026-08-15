@@ -19,9 +19,6 @@
         .btn { width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
         .btn-success { background-color: #059669; color: white; }
     </style>
-    <!-- استدعاء مكاتب خوادم Firebase الصافية المتوافقة مع جميع المتصفحات -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
 </head>
 <body>
 
@@ -79,13 +76,17 @@
         </form>
     </div>
 
-    <script>
-        // تهيئة السيرفر السحابي الموحد الخاص بك
+    <!-- استدعاء مكاتب خوادم Firebase الحديثة بنظام الـ Modules المستقل والمضاد للحظر أونلاين -->
+    <script type="module">
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, push, set } from "https://gstatic.com";
+
         const firebaseConfig = {
             databaseURL: "https://firebaseio.com"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
         document.addEventListener("DOMContentLoaded", function() {
             var btn = document.getElementById('btnSubmitForm');
@@ -115,32 +116,31 @@
                     var reader = new FileReader();
                     reader.onload = function () {
                         var receiptData = reader.result;
-                        sendToFirebase(sName, email, pass, mName, phone, stage, region, receiptData);
+                        
+                        // حقن البيانات في مسار المدارس السحابي بدقة متناهية وبصيغة الـ Modules المستقرة
+                        var newSchoolRef = push(ref(db, 'schools'));
+                        set(newSchoolRef, {
+                            schoolName: sName,
+                            email: email,
+                            password: pass,
+                            managerName: mName,
+                            phone: phone,
+                            stage: stage,
+                            region: region,
+                            status: "بانتظار الاعتماد",
+                            receipt: receiptData,
+                            students: []
+                        }).then(() => {
+                            alert("🎉 تم إرسال طلب تسجيل مدرستكم بنجاح للسيرفر السحابي أونلاين!\n\nيرجى الانتظار لحين التفعيل من قبل الآدمن.");
+                            window.location.href = "index.html";
+                        }).catch((error) => {
+                            alert("❌ فشل الاتصال بالسيرفر السحابي! تحقق من إعدادات الـ Rules بـ Firebase.");
+                        });
                     };
                     reader.readAsDataURL(receiptInput.files);
                 };
             }
         });
-
-        function sendToFirebase(sName, email, pass, mName, phone, stage, region, receiptData) {
-            db.ref('schools').push().set({
-                schoolName: sName,
-                email: email,
-                password: pass,
-                managerName: mName,
-                phone: phone,
-                stage: stage,
-                region: region,
-                status: "بانتظار الاعتماد",
-                receipt: receiptData,
-                students: []
-            }).then(() => {
-                alert("🎉 تم إرسال طلب تسجيل مدرستكم بنجاح للسيرفر السحابي أونلاين!\n\nيرجى الانتظار لحين التفعيل من قبل الآدمن.");
-                window.location.href = "index.html";
-            }).catch((error) => {
-                alert("❌ فشل الاتصال بالسيرفر السحابي! تحقق من إعدادات الـ Rules بـ Firebase.");
-            });
-        }
     </script>
 </body>
 </html>
