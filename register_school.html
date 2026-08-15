@@ -19,7 +19,7 @@
         .btn { width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
         .btn-success { background-color: #059669; color: white; }
     </style>
-    <!-- استدعاء مكاتب خوادم Firebase الصافية الرسمية لتخطي حظر المتصفحات أونلاين -->
+    <!-- استدعاء مكاتب خوادم Firebase الصافية الرسمية المتوافقة مع الويب والجوال -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 </head>
@@ -80,17 +80,18 @@
     </div>
 
     <script>
-        // تم ضبط الرابط الصافي والمطابق لصورتك بالملي بدون أي زيادة أو نقصان لفتح الاتصال مباشرة
+        // تهيئة السيرفر السحابي الموحد الخاص بك
         const firebaseConfig = {
-            databaseURL: "https://firebaseio.com"
+            databaseURL: "https://moe-behavior-system-default-rtdb.firebaseio.com"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // ربط وتشغيل الزر برمجياً بشكل مباشر لحسم أي نقص أو تجميد
         document.addEventListener("DOMContentLoaded", function() {
             var btn = document.getElementById('btnSubmitForm');
             if (btn) {
-                btn.onclick = function(e) {
+                btn.addEventListener('click', function(e) {
                     if(e) e.preventDefault();
 
                     var sName = document.getElementById('schoolName').value.trim();
@@ -118,7 +119,7 @@
                         sendToFirebase(sName, email, pass, mName, phone, stage, region, receiptData);
                     };
                     reader.readAsDataURL(receiptInput.files);
-                };
+                });
             }
         });
 
