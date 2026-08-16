@@ -126,13 +126,13 @@
             }
         }
 
-        // دالة جلب وعرض طلبات المدارس أونلاين من السيرفر السحابي مباشرة
-        function renderSchoolsRequestsTable() {
+               function renderSchoolsRequestsTable() {
             var tbody = document.getElementById('schoolsTableBody');
             if (!tbody) return;
 
             tbody.innerHTML = '<tr><td colspan="10" style="color:#64748b; padding:20px;">⏳ جاري جلب طلبات المدارس السحابية...</td></tr>';
 
+            // الاتصال السحابي المباشر لقشط البيانات أونلاين فوراً
             database.ref('schools').get().then((snapshot) => {
                 var schools = snapshot.val() || {};
                 tbody.innerHTML = '';
@@ -169,7 +169,6 @@
                 tbody.innerHTML = '<tr><td colspan="10" style="color:#ef4444; padding:20px;">⚠️ فشل جلب طلبات المدارس من السيرفر السحابي.</td></tr>';
             });
         }
-
         // دالة حقن وتحديث حالة الحساب للتفعيل أونلاين فوراً
         function approveSchoolAccount(schoolKey) {
             if (!confirm("هل أنت متأكد من رغبتك في اعتماد وتفعيل حساب هذه المدرسة على السيرفر السحابي؟")) return;
