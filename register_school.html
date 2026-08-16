@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <!-- تشغيل الجسر السحابي الموحد لربط ملفاتك بالسيرفر تلقائياً بدون تعديل الأكواد الأوفلاين -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <script src="firebase-bridge.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل مدرسة جديدة - نظام الالتزام المدرسي</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+        header { background-color: #ffffff; border-bottom: 4px solid #059669; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 15px 30px; }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .gov-ministry { font-size: 20px; font-weight: bold; color: #1e293b; }
+        .gov-system { font-size: 14px; font-weight: 600; color: #059669; }
+        .reg-box { max-width: 500px; margin: 40px auto; background: white; padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .reg-title { font-size: 20px; font-weight: bold; color: #1e293b; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; }
+        .btn { width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; transition: background 0.2s; }
+        .btn-success { background-color: #059669; color: white; }
+        .btn-success:hover { background-color: #047857; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div>
+                <div class="gov-ministry">وزارة التعلـيـم</div>
+                <div class="gov-system">بوابة تسجيل المدارس الجديدة</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="reg-box">
+        <h2 class="reg-title">📝 طلب تسجيل مدرسة جديدة بالمنظومة</h2>
+        <form onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label>المنطقة التعليمية بوزارة التعليم:</label>
+                <input type="text" id="eduRegion" class="form-control" required placeholder="مثال: منطقة عسير">
+            </div>
+            <div class="form-group">
+                <label>اسم المدرسة:</label>
+                <input type="text" id="schoolName" class="form-control" required placeholder="مثال: مدرسة الفهد الثانوية">
+            </div>
+            <div class="form-group">
+                <label>المرحلة الدراسية:</label>
+                <select id="schoolStage" class="form-control" required>
+                    <option value="">اختر المرحلة...</option>
+                    <option value="الابتدائية">الابتدائية</option>
+                    <option value="المتوسطة">المتوسطة</option>
+                    <option value="الثانوية">الثانوية</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>اسم مدير المدرسة:</label>
+                <input type="text" id="managerName" class="form-control" required placeholder="الاسم الثلاثي الكامل">
+            </div>
+            <div class="form-group">
+                <label>رقم جوال المدير:</label>
+                <input type="tel" id="managerPhone" class="form-control" required placeholder="05xxxxxxxx">
+            </div>
+            <div class="form-group">
+                <label>البريد الإلكتروني (سيستخدم لتسجيل الدخول):</label>
+                <input type="email" id="schoolEmail" class="form-control" required placeholder="school@example.com">
+            </div>
+            <div class="form-group">
+                <label>كلمة السر (ثابتة لا تتغير):</label>
+                <input type="password" id="schoolPassword" class="form-control" required placeholder="أدخل كلمة مرور قوية">
+            </div>
+                       <!-- الصندوق المالي المطور متضمناً رقم الآيبان الحقيقي وتوجيهات رفع المرفقات -->
+            <div class="form-group">
+                <label style="line-height:1.7;">
+                    🔒 <b>رسوم تفعيل الخدمة :</b> (40 ريال سعودي فقط).<br>
+                    🏦 <b>رقم الحساب البنكي بنك الراجحي للتحويل (IBAN):</b><br>
+                    <code style="background:#f1f5f9; padding:6px 10px; border-radius:6px; font-weight:bold; color:#0f766e; display:inline-block; margin:5px 0; font-size:13px; direction:ltr; border:1px solid #e2e8f0; letter-spacing:1px;">SA2280000437608016117908</code><br>
+                    📸 يرجى تحويل المبلغ ثم إرفاق صورة إيصال السداد أدناه لتفعيل الحساب:
+                </label>
+                <input type="file" id="receiptFile" class="form-control" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-success">إرسال طلب التسجيل أونلاين</button>
+            <a href="index.html" style="display:block; text-align:center; margin-top:15px; color:#64748b; font-size:12px; text-decoration:none;">العودة للرئيسية</a>
+        </form>
+    </div>
+
+    <script>
+        function handleRegister(e) {
+            e.preventDefault();
+            
+            var email = document.getElementById('schoolEmail').value.trim();
+            var schoolsDatabase = JSON.parse(localStorage.getItem('schools_database')) || [];
+            
+            // 🔒 1. فحص صارم ومباشر لمنع تكرار الإيميل وإظهار رسالة التنبيه المحددة
+            var isEmailDuplicate = false;
+            for (var i = 0; i < schoolsDatabase.length; i++) {
+                if (schoolsDatabase[i] && schoolsDatabase[i].email === email) {
+                    isEmailDuplicate = true;
+                    break;
+                }
+            }
+
+            if (isEmailDuplicate) {
+                alert("❌ هذا البريد الإلكتروني مسجل مسبقاً!");
+                return; // إيقاف العملية تماماً ومنع توليد طلب جديد للمدرسة المكررة
+            }
+            
+            // 📂 2. معالجة وحقن المرفقات في حال كان الحساب جديداً وصحيحاً
+            const receiptInput = document.getElementById('receiptFile');
+            let receiptDataUrl = "";
+
+            if (receiptInput.files && receiptInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    receiptDataUrl = event.target.result;
+                    sendRegistrationToFirebase(); 
+                };
+                reader.readAsDataURL(receiptInput.files[0]);
+            } else {
+                alert("⚠️ يرجى إرفاق صورة إيصال السداد أولاً!");
+            }
+
+            function sendRegistrationToFirebase() {
+                var newSchoolObject = {
+                    region: document.getElementById('eduRegion').value,
+                    schoolName: document.getElementById('schoolName').value,
+                    stage: document.getElementById('schoolStage').value,
+                    managerName: document.getElementById('managerName').value,
+                    phone: document.getElementById('managerPhone').value,
+                    email: email,
+                    password: document.getElementById('schoolPassword').value,
+                    receipt: receiptDataUrl,
+                    status: 'بانتظار الاعتماد',
+                    students: [] 
+                };
+
+                // التخزين المحلي التقليدي لحسابك أوفلاين
+                schoolsDatabase.push(newSchoolObject);
+                localStorage.setItem('schools_database', JSON.stringify(schoolsDatabase));
+
+                // المزامنة عبر الجسر البرمي لدفعه فوراً للسيرفر السحابي أونلاين
+                if (window.firebaseBridge && typeof window.firebaseBridge.syncToCloud === 'function') {
+                    window.firebaseBridge.syncToCloud('schools', schoolsDatabase);
+                }
+
+                // رسالة النجاح الكبرى للتسجيل الجديد بانتظار الاعتماد
+                alert("🎉 تم التسجيل بنجاح، الحساب بانتظار التفعيل والاعتماد من الإدارة الموقع للتواصل واتساب فقط 0570094091.");
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

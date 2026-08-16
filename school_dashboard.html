@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <!-- تشغيل الجسر السحابي الموحد لربط ملفاتك بالسيرفر تلقائياً بدون تعديل الأكواد الأوفلاين -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <script src="firebase-bridge.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة مدير المدرسة - نظام الالتزام المدرسي</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        header { background-color: #ffffff; border-bottom: 4px solid #059669; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 15px 30px; }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .gov-info { text-align: right; }
+        .gov-country { font-size: 12px; color: #64748b; font-weight: 600; }
+        .gov-ministry { font-size: 20px; font-weight: bold; color: #1e293b; margin: 2px 0; }
+        .gov-system { font-size: 14px; font-weight: 600; color: #059669; }
+        .logos-container { display: flex; align-items: center; gap: 20px; }
+        
+        /* نموذج دخول المدير */
+        .login-box { max-width: 420px; margin: 60px auto; background: white; padding: 35px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
+        .login-title { font-size: 20px; font-weight: bold; color: #1e293b; margin-bottom: 20px; }
+        
+        /* لوحة التحكم الرئيسية */
+        main { max-width: 1200px; margin: 30px auto; padding: 0 20px; flex-grow: 1; width: 100%; display: none; }
+        .dashboard-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .dash-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .school-info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+        
+        /* النماذج والأزرار */
+        .form-group { margin-bottom: 15px; text-align: right; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; }
+        .btn { border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; transition: background 0.2s; }
+        .btn-success { background-color: #059669; color: white; }
+        .btn-success:hover { background-color: #047857; }
+        .btn-primary { background-color: #2563eb; color: white; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-danger { background-color: #ef4444; color: white; }
+        
+        .bulk-area { width: 100%; height: 120px; direction: rtl; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; resize: none; margin-bottom: 10px; }
+        
+        /* جدول استعراض الطلاب المسجلين */
+        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; margin-top: 15px; }
+        th { background-color: #f8fafc; color: #334155; padding: 12px; font-weight: bold; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 12px; border-bottom: 1px solid #edf2f7; color: #475569; }
+        
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        .badge-signed { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-unsigned { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="gov-info">
+                <div class="gov-country">المملكة العربية السعودية</div>
+                <div class="gov-ministry">وزارة التعلـيـم</div>
+                <div class="gov-system">بوابة الخدمات الإلكترونية لمدراء المدارس</div>
+            </div>
+            <div class="logos-container">
+                <strong style="color:#059669; font-size:16px;">وزارة التعليم</strong>
+            </div>
+        </div>
+    </header>
+
+    <div class="login-box" id="schoolLoginBox">
+        <h2 class="login-title">🔐 تسجيل دخول مدير المدرسة</h2>
+        <form onsubmit="handleSchoolLogin(event)">
+            <div class="form-group">
+                <label>البريد الإلكتروني للمدرسة:</label>
+                <input type="email" id="loginEmail" class="form-control" required placeholder="school@example.com">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور الثابتة:</label>
+                <input type="password" id="loginPass" class="form-control" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-success" style="width:100%; padding:12px; font-size:15px;">دخول آمن</button>
+            <a href="index.html" style="display:block; margin-top:15px; color:#64748b; font-size:12px; text-decoration:none;">العودة للرئيسية</a>
+        </form>
+    </div>
+    <main id="schoolDashboardMain">
+        <div class="dashboard-card">
+            <div class="dash-header">
+                <h2>💼 لوحة تحكم وإدارة ملف المدرسة</h2>
+                <button onclick="handleSchoolLogout()" class="btn btn-danger">تسجيل الخروج</button>
+            </div>
+            <div class="school-info-bar">
+                <div><strong>📍 الإدارة التعليمية:</strong> <span id="infoRegion">-</span></div>
+                <div><strong>🏫 اسم المدرسة:</strong> <span id="infoName">-</span></div>
+                <div><strong>🎓 المرحلة الدراسية:</strong> <span id="infoStage">-</span></div>
+                <div><strong>👤 مدير المدرسة:</strong> <span id="infoManager">-</span></div>
+            </div>
+        </div>
+
+        <div class="dashboard-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div style="border-left: 1px solid #e2e8f0; padding-left: 20px;">
+                <h3 style="margin-bottom:15px; color:#1e293b;">👤 إضافة طالب مفرد</h3>
+                <form onsubmit="addSingleStudent(event)">
+                    <div class="form-group">
+                        <label>اسم الطالب الثلاثي:</label>
+                        <input type="text" id="stuName" class="form-control" required placeholder="أدخل اسم الطالب">
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الهوية الوطنية / الإقامة:</label>
+                        <input type="text" id="stuId" class="form-control" required placeholder="1xxxxxxxxxx">
+                    </div>
+                    <button type="submit" class="btn btn-success">+ إدراج الطالب في السجل</button>
+                </form>
+            </div>
+
+            <div>
+                <h3 style="margin-bottom:15px; color:#1e293b;">📋 لصق قائمة طلاب جماعية</h3>
+                <p style="font-size:11px; color:#64748b; margin-bottom:8px;">ضع كل طالب ورقم هويته في سطر مستقل يفصل بينهما فاصلة (مثال: محمد أحمد,1023456789)</p>
+                <textarea id="bulkStudentsText" class="bulk-area" placeholder="أحمد خالد,1092837465&#10;خالد وليد,1029384756"></textarea>
+                <button onclick="addBulkStudents()" class="btn btn-primary">⚡ معالجة ولصق القائمة فوراً</button>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <h3 style="margin-bottom:15px; color:#1e293b;">📋 سجل الطلاب المعتمدين بالمدرسة ومتابعة العقود</h3>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم الهوية / الإقامة</th>
+                            <th>اسم الطالب</th>
+                            <th>حالة توقيع العقد</th>
+                            <th>العقد السلوكي المرفق</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- تظهر قوائم الطلاب هنا برمجياً ومعزولة بكل إيميل مدرسة مستقل -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer style="background-color: #1e293b; color: #94a3b8; text-align: center; padding: 15px; font-size: 12px;">
+        المملكة العربية السعودية • جميع الحقوق محفوظة لنظام الالتزام المدرسي 1448 هـ
+    </footer>
+    <script>
+        var currentSchoolEmail = "";
+
+        function handleSchoolLogin(e) {
+            e.preventDefault();
+            var email = document.getElementById('loginEmail').value.trim();
+            var pass = document.getElementById('loginPass').value.trim();
+            var schools = [];
+            try { schools = JSON.parse(localStorage.getItem('schools_database')) || []; } catch(err) { schools = []; }
+            
+            var schoolFound = null;
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === email) { schoolFound = schools[i]; break; }
+            }
+
+            if (!schoolFound) { alert("❌ خطأ: هذا البريد الإلكتروني غير مسجل في النظام بتاتاً!"); return; }
+            if (schoolFound.password !== pass) { alert("❌ خطأ: كلمة المرور المدخلة غير صحيحة!"); return; }
+            if (schoolFound.status !== 'تم التفعيل') { alert("⚠️ تنبيه: الحساب بانتظار التفعيل والاعتماد من الإدارة (الآدمن)."); return; }
+
+            currentSchoolEmail = email;
+            document.getElementById('schoolLoginBox').style.display = 'none';
+            document.getElementById('schoolDashboardMain').style.display = 'block';
+            
+            document.getElementById('infoRegion').innerText = schoolFound.region || "-";
+            document.getElementById('infoName').innerText = schoolFound.schoolName || "-";
+            document.getElementById('infoStage').innerText = schoolFound.stage || "-";
+            document.getElementById('infoManager').innerText = schoolFound.managerName || "-";
+            loadStudentsList();
+        }
+
+        function handleSchoolLogout() {
+            currentSchoolEmail = "";
+            document.getElementById('schoolLoginBox').style.display = 'block';
+            document.getElementById('schoolDashboardMain').style.display = 'none';
+        }
+
+        function loadStudentsList() {
+            var tbody = document.getElementById('studentsTableBody');
+            var schools = JSON.parse(localStorage.getItem('schools_database')) || [];
+            var students = [];
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === currentSchoolEmail) { students = schools[i].students || []; break; }
+            }
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#94a3b8;">لا يوجد طلاب مسجلين حالياً.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            for (var j = 0; j < students.length; j++) {
+                var stu = students[j];
+                var statusBadge = stu.signed ? '<span class="badge badge-signed">✅ وقّع العقد</span>' : '<span class="badge badge-unsigned">⏳ لم يوقع بعد</span>';
+                var actionBtn = stu.signed ? '<button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="viewStudentContract(\'' + stu.id + '\')">📄 استعراض وطباعة العقد</button>' : '<span style="color:#cbd5e1;">غير متاح</span>';
+                tbody.innerHTML += '<tr><td><b>' + stu.id + '</b></td><td>' + stu.name + '</td><td>' + statusBadge + '</td><td>' + actionBtn + '</td></tr>';
+            }
+        }
+
+              function addSingleStudent(e) {
+            e.preventDefault();
+            var name = document.getElementById('stuName').value.trim();
+            var id = document.getElementById('stuId').value.trim();
+            var schools = JSON.parse(localStorage.getItem('schools_database')) || [];
+
+            // 🚫 فحص حاسم: التأكد من أن الهوية غير مسجلة في مدرسة أخرى نهائياً
+            for (var i = 0; i < schools.length; i++) {
+                var list = schools[i].students || [];
+                for (var j = 0; j < list.length; j++) {
+                    if (list[j] && list[j].id === id) {
+                        alert("❌ خطأ حاسم: رقم الهوية هذا مسجل مسبقاً في مدرسة (" + schools[i].schoolName + ")! لا يمكن تكرار الطلاب بين المدارس.");
+                        return;
+                    }
+                }
+            }
+
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === currentSchoolEmail) {
+                    schools[i].students = schools[i].students || [];
+                    schools[i].students.push({ name: name, id: id, signed: false, data: null });
+                    break;
+                }
+            }
+            localStorage.setItem('schools_database', JSON.stringify(schools));
+            document.getElementById('stuName').value = '';
+            document.getElementById('stuId').value = '';
+            alert('🎉 تم إضافة الطالب بنجاح إلى سجل مدرستكم!');
+            loadStudentsList();
+        }
+
+        function addBulkStudents() {
+            var text = document.getElementById('bulkStudentsText').value.trim();
+            if(!text) { alert('يرجى لصق قائمة الأسماء أولاً!'); return; }
+            var lines = text.split('\n');
+            var schools = JSON.parse(localStorage.getItem('schools_database')) || [];
+            var count = 0;
+            var duplicatesCount = 0;
+
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === currentSchoolEmail) {
+                    schools[i].students = schools[i].students || [];
+                    for (var j = 0; j < lines.length; j++) {
+                        var line = lines[j].trim();
+                        if(!line) continue;
+                        var parts = line.split(',');
+                        if(parts.length >= 2) {
+                            var sName = parts[0].trim();
+                            var sId = parts[1].trim();
+                            
+                            var isGlobalDuplicate = false;
+                            for (var x = 0; x < schools.length; x++) {
+                                var currentList = schools[x].students || [];
+                                for (var y = 0; y < currentList.length; y++) {
+                                    if (currentList[y] && currentList[y].id === sId) {
+                                        isGlobalDuplicate = true;
+                                        break;
+                                    }
+                                }
+                                if (isGlobalDuplicate) break;
+                            }
+
+                            if (!isGlobalDuplicate) {
+                                schools[i].students.push({ name: sName, id: sId, signed: false, data: null });
+                                count++;
+                            } else {
+                                duplicatesCount++;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            localStorage.setItem('schools_database', JSON.stringify(schools));
+            document.getElementById('bulkStudentsText').value = '';
+            if (duplicatesCount > 0) {
+                alert('🎉 تم إضافة (' + count + ') طالب بنجاح. وتم تجاهل (' + duplicatesCount + ') طالب لأن هوياتهم مسجلة في مدارس أخرى بالفعل!');
+            } else {
+                alert('🎉 تم إضافة عدد (' + count + ') طالب بنجاح بداخل السجل الدائم.');
+            }
+            loadStudentsList();
+        }
+
+
+        function addBulkStudents() {
+            var text = document.getElementById('bulkStudentsText').value.trim();
+            if(!text) { alert('يرجى لصق قائمة الأسماء أولاً!'); return; }
+            var lines = text.split('\n');
+            var schools = JSON.parse(localStorage.getItem('schools_database')) || [];
+            var count = 0;
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === currentSchoolEmail) {
+                    schools[i].students = schools[i].students || [];
+                    for (var j = 0; j < lines.length; j++) {
+                        var line = lines[j].trim();
+                        if(!line) continue;
+                        var parts = line.split(',');
+                        if(parts.length >= 2) {
+                            var sName = parts[0].trim();
+                            var sId = parts[1].trim();
+                            var exist = false;
+                            for(var k=0; k < schools[i].students.length; k++) {
+                                if(schools[i].students[k].id === sId) { exist = true; break; }
+                            }
+                            if(!exist) {
+                                schools[i].students.push({ name: sName, id: sId, signed: false, data: null });
+                                count++;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            localStorage.setItem('schools_database', JSON.stringify(schools));
+            document.getElementById('bulkStudentsText').value = '';
+            alert('تم إضافة عدد (' + count + ') طالب بنجاح.');
+            loadStudentsList();
+        }
+
+                    // دالة الطباعة المعزولة والمستقلة بالكامل داخل صفحة المدير (بدون فتح صفحة الطالب نهائياً)
+        function viewStudentContract(studentId) {
+            var schools = [];
+            try { schools = JSON.parse(localStorage.getItem('schools_database')) || []; } catch(e) { schools = []; }
+            
+            var studentData = null;
+            var currentSchool = null;
+            
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === currentSchoolEmail) {
+                    currentSchool = schools[i];
+                    var list = schools[i].students || [];
+                    for(var j=0; j<list.length; j++) {
+                        if(list[j].id === studentId) { studentData = list[j]; break; }
+                    }
+                    break;
+                }
+            }
+
+            if(studentData && studentData.data) {
+                var printWindow = window.open('', '_blank');
+                
+                printWindow.document.write('<html><head><title>طباعة وثيقة الالتزام</title>');
+                printWindow.document.write('<style>');
+                printWindow.document.write('* { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, sans-serif; }');
+                printWindow.document.write('body { background: #ffffff; padding: 10mm 15mm; direction: rtl; color: #2c3e50; font-size: 13px; }');
+                printWindow.document.write('.print-gov-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 15px; }');
+                printWindow.document.write('.school-badge-title { font-size: 13px; color: #115e59; font-weight: bold; margin-top: 4px; }');
+                printWindow.document.write('.main-form-title { text-align: center; font-size: 22px; font-weight: bold; color: #115e59; margin-bottom: 20px; }');
+                printWindow.document.write('.card-section { background: white; border: 1px solid #cbd5e1; border-right: 5px solid #115e59; border-radius: 12px; padding: 20px; margin-bottom: 15px; }');
+                printWindow.document.write('.card-section h3 { font-size: 15px; font-weight: bold; color: #115e59; margin-bottom: 8px; }');
+                printWindow.document.write('.data-display-inline { font-size: 14px; line-height: 2; margin-bottom: 10px; color: #34495e; }');
+                printWindow.document.write('.text-statement { text-align: justify; font-size: 13px; line-height: 1.7; background: #fff; padding: 12px; border: 1px dashed #cbd5e1; margin: 8px 0; border-radius: 6px; color: #475569; }');
+                printWindow.document.write('.interactive-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }');
+                printWindow.document.write('.field-group { display: flex; flex-direction: column; text-align: right; gap: 2px; }');
+                printWindow.document.write('.field-group label { font-weight: 600; font-size: 12.5px; color: #34495e; }');
+                printWindow.document.write('.field-value { font-weight: bold; font-size: 14px; color: #000; border-bottom: 1px solid #e2e8f0; padding: 4px 0; }');
+                printWindow.document.write('.checkbox-container { display: flex; align-items: center; gap: 8px; padding: 8px; font-weight: bold; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; }');
+                printWindow.document.write('.barcodes-grid { display: flex; justify-content: space-around; align-items: center; margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 15px; gap: 10px; }');
+                printWindow.document.write('.barcode-item { font-size: 11px; font-weight: bold; text-align: center; width: 30%; color: #475569; display: flex; flex-direction: column; align-items: center; gap: 6px; }');
+                printWindow.document.write('.bottom-green-bar { background: linear-gradient(to left, #115e59, #14b8a6); color: white; text-align: center; font-weight: bold; padding: 10px; margin-top: 20px; border-radius: 8px; font-size: 13px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }');
+                printWindow.document.write('</style></head><body>');
+                
+                // ترويسة الوزارة الرسمية المعزولة
+                printWindow.document.write('<div class="print-gov-header">');
+                printWindow.document.write('<div style="text-align: right; font-weight: bold; line-height: 1.6;"><div>المملكة العربية السعودية</div><div>وزارة التعليم</div><div>الإدارة العامة للتعليم بمنطقة: ' + (currentSchool.region || "-") + '</div><div class="school-badge-title">مدرسة: ' + (currentSchool.schoolName || "-") + '</div></div>');
+                printWindow.document.write('<div style="text-align: center; font-weight: bold; color: #115e59; font-size: 16px;">وزارة التعليم</div>');
+                printWindow.document.write('<div style="text-align: left; font-weight: bold; line-height: 1.6;"><div>العام الدراسي: 1448 هـ</div><div>المرحلة: ' + (currentSchool.stage || "-") + '</div></div>');
+                printWindow.document.write('</div>');
+
+                printWindow.document.write('<div class="main-form-title">نموذج الالتزام المدرسي المعتمد</div>');
+
+                // كرت تعهد الطالب الموثق
+                printWindow.document.write('<div class="card-section"><h3>🔵 خاص بالطالب</h3>');
+                printWindow.document.write('<div class="data-display-inline"><b>الاسم :</b> ' + studentData.name + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>المرحلة الدراسية :</b> ' + (currentSchool.stage || "-") + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>رقم السجل / الهوية :</b> ' + studentId + '</div>');
+                printWindow.document.write('<div class="text-statement">نعم أنا الطالب الموضح اسمه وبياناته أعلاه ، قد اطلعت على محتوى قواعد السلوك و المواظبة ، و بناًء عليه أتعهد أن ألتزم بالأنظمة و التعليمات الخاصة بقواعد السلوك و المواظبة . واتعهد بااللتزام بالزي الرسمي للمدرسة.</div>');
+                printWindow.document.write('<div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px; margin-top:5px;"><div><b>التوقيع الإلكتروني :</b> <span style="color:#16a34a;">✓ مصادق بالبصمة الرقمية المعتمدة</span></div><div><b>التاريخ الهجري :</b> <span style="color:#115e59;">' + studentData.data.signDate + '</span></div></div></div>');
+
+                // كرت تعهد ولي الأمر المخزن بالكامل
+                printWindow.document.write('<div class="card-section" style="border-right-color: #0d9488;"><h3>🟢 خاص بولي الأمر</h3>');
+                printWindow.document.write('<div class="text-statement">نعم أنا ولي أمر الطالب الموضح اسمه وبياناته . قد اطلعت على محتوى قواعد السلوك والمواظبة وبناء عليه أتعهد بأن أتعاون مع إدارة المدرسة في سبيل مصلحة ابني /ابنتي ، ليكون ملتزماً بالأنظمة والتعليمات الخاصة بقواعد السلوك والمواظبة ، واتعهد بالتزام الطالب بالزي الرسمي حسب الدليل الموضح في الباركود المرفق. كما نرفق دليل نظام حماية المتعلمين والطفل لدعم الشراكة بين الأسرة والمدرسة في توفير بيئة تعليمية آمنة . و أتحمل مسؤولية صحة أرقام التواصل التالية :</div>');
+                
+                printWindow.document.write('<div class="interactive-grid">');
+                printWindow.document.write('<div class="field-group"><label>الاسم الكامل لولي الأمر /</label><div class="field-value">' + studentData.data.parentName + '</div></div>');
+                printWindow.document.write('<div class="field-group"><label>المصادقة والتوقيع الرقمي /</label><div class="checkbox-container">✓ معتمد وموقّع رقمياً بصمة الهوية المعتمدة</div></div>');
+                printWindow.document.write('<div class="field-group"><label>العمل وجهة التوظيف :</label><div class="field-value">' + (studentData.data.parentJob || "جهة عمل خاصة") + '</div></div>');
+                printWindow.document.write('<div class="field-group"><label>تاريخ السداد والمصادقة :</label><div class="field-value" style="color:#0d9488;">' + studentData.data.signDate + '</div></div>');
+                printWindow.document.write('<div class="field-group"><label>رقم الجوال الأساسي :</label><div class="field-value">' + studentData.data.parentPhone + '</div></div>');
+                printWindow.document.write('<div class="field-group"><label>رقم اتصال آخر بديل :</label><div class="field-value">' + (studentData.data.parentPhone2 || "لم يدرج رقم بديل") + '</div></div>');
+                printWindow.document.write('</div></div>');
+                                                 // قسم الباركودات المطور والمضمون 100% لقراءة الصور المحلية من جهازك بناء على امتداد مجلدك الحالي
+                printWindow.document.write('<div class="barcodes-grid">');
+                
+                // 1. باركود قواعد السلوك والمواظبة المتوافق مع تسمية مجلدك
+                printWindow.document.write('<div class="barcode-item">');
+                printWindow.document.write('<img src="barcode_behavior.jpg" style="width:55px; height:55px; object-fit:contain; display:block; margin:0 auto;" onerror="this.src=\'barcode_behavior.JPG\'; this.onerror=function(){this.src=\'barcode_behavior.png\'; this.onerror=function(){this.src=\'barcode_behavior.jpg.jpg\';}}">');
+                printWindow.document.write('<div style="margin-top:6px;">قواعد السلوك والمواظبة</div></div>');
+                
+                // 2. باركود لائحة حماية الطفل المتوافق مع تسمية مجلدك
+                printWindow.document.write('<div class="barcode-item">');
+                printWindow.document.write('<img src="barcode_child.jpg" style="width:55px; height:55px; object-fit:contain; display:block; margin:0 auto;" onerror="this.src=\'barcode_child.JPG\'; this.onerror=function(){this.src=\'barcode_child.png\'; this.onerror=function(){this.src=\'barcode_child.jpg.jpg\';}}">');
+                printWindow.document.write('<div style="margin-top:6px;">لائحة حماية الطفل</div></div>');
+                
+                // 3. باركود دليل الزي الرسمي المتوافق مع تسمية مجلدك
+                printWindow.document.write('<div class="barcode-item">');
+                printWindow.document.write('<img src="barcode_dress.jpg" style="width:55px; height:55px; object-fit:contain; display:block; margin:0 auto;" onerror="this.src=\'barcode_dress.JPG\'; this.onerror=function(){this.src=\'barcode_dress.png\'; this.onerror=function(){this.src=\'barcode_dress.jpg.jpg\';}}">');
+                printWindow.document.write('<div style="margin-top:6px;">دليل الزي الرسمي</div></div>');
+                
+                printWindow.document.write('</div>');
+
+                printWindow.document.write('<div class="bottom-green-bar">استمارة الالتزام المدرسي والزي الرسمي 1448هـ</div>');
+                printWindow.document.write('<script>');
+                // تأخير بسيط بمقدار 500 جزء من الثانية ليعطي المتصفح فرصة لالتقاط صور جهازك المحلية قبل خروج أمر الطباعة
+                printWindow.document.write('setTimeout(function(){ window.print(); }, 500);');
+                printWindow.document.write('<\/script></body></html>');
+                printWindow.document.close();
+
+}
+}
+    </script>
+</body>
+</html>
