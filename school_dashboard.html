@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <!-- تشغيل الجسر السحابي الموحد لربط ملفاتك بالسيرفر تلقائياً بدون تعديل الأكواد الأوفلاين -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <script src="firebase-bridge.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوابة مدير المدرسة - نظام الالتزام المدرسي</title>
@@ -76,9 +80,7 @@
                 <input type="password" id="loginPass" class="form-control" required placeholder="••••••••">
             </div>
             <button type="submit" class="btn btn-success" style="width:100%; padding:12px; font-size:15px;">دخول آمن</button>
-            <!-- رابط استعادة كلمة المرور الفوري والذاتي -->
-            <a href="#" onclick="recoverSchoolPassword(event)" style="display:block; margin-top:12px; color:#2563eb; font-size:12px; font-weight:600; text-decoration:none;">🔑 نسيت كلمة المرور؟</a>          
-  <a href="index.html" style="display:block; margin-top:15px; color:#64748b; font-size:12px; text-decoration:none;">العودة للرئيسية</a>
+            <a href="index.html" style="display:block; margin-top:15px; color:#64748b; font-size:12px; text-decoration:none;">العودة للرئيسية</a>
         </form>
     </div>
     <main id="schoolDashboardMain">
@@ -95,7 +97,7 @@
             </div>
         </div>
 
-                <div class="dashboard-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div class="dashboard-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
             <div style="border-left: 1px solid #e2e8f0; padding-left: 20px;">
                 <h3 style="margin-bottom:15px; color:#1e293b;">👤 إضافة طالب مفرد</h3>
                 <form onsubmit="addSingleStudent(event)">
@@ -107,45 +109,36 @@
                         <label>رقم الهوية الوطنية / الإقامة:</label>
                         <input type="text" id="stuId" class="form-control" required placeholder="1xxxxxxxxxx">
                     </div>
-                    <div class="form-group">
-                        <label>الصف الدراسي:</label>
-                                               <input type="text" id="stuClass" class="form-control" required placeholder="مثال: الأول المتوسط">
-                    </div>
                     <button type="submit" class="btn btn-success">+ إدراج الطالب في السجل</button>
                 </form>
             </div>
 
             <div>
                 <h3 style="margin-bottom:15px; color:#1e293b;">📋 لصق قائمة طلاب جماعية</h3>
-                <p style="font-size:11px; color:#64748b; margin-bottom:8px;">ضع كل طالب وبياناته في سطر مستقل يفصل بينهما فاصلة (الاسم,الهوية,الصف)</p>
-                <textarea id="bulkStudentsText" class="bulk-area" placeholder="أحمد خالد,1092837465,الأول&#10;خالد وليد,1029384756,الثاني" style="height:175px;"></textarea>
+                <p style="font-size:11px; color:#64748b; margin-bottom:8px;">ضع كل طالب ورقم هويته في سطر مستقل يفصل بينهما فاصلة (مثال: محمد أحمد,1023456789)</p>
+                <textarea id="bulkStudentsText" class="bulk-area" placeholder="أحمد خالد,1092837465&#10;خالد وليد,1029384756"></textarea>
                 <button onclick="addBulkStudents()" class="btn btn-primary">⚡ معالجة ولصق القائمة فوراً</button>
             </div>
         </div>
 
         <div class="dashboard-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="color:#1e293b;">📋 سجل الطلاب المعتمدين ومتابعة العقود</h3>
-                <button onclick="clearAllSchoolStudents()" class="btn btn-danger" style="background-color: #dc2626; font-size:12px;">⚠️ مسح جميع الطلاب</button>
-            </div>
+            <h3 style="margin-bottom:15px; color:#1e293b;">📋 سجل الطلاب المعتمدين بالمدرسة ومتابعة العقود</h3>
             <div style="overflow-x:auto;">
                 <table>
                     <thead>
                         <tr>
                             <th>رقم الهوية / الإقامة</th>
                             <th>اسم الطالب</th>
-                            <th>الصف الدراسي</th>
                             <th>حالة توقيع العقد</th>
                             <th>العقد السلوكي المرفق</th>
-                            <th>إجراءات السجل</th>
                         </tr>
                     </thead>
                     <tbody id="studentsTableBody">
+                        <!-- تظهر قوائم الطلاب هنا برمجياً ومعزولة بكل إيميل مدرسة مستقل -->
                     </tbody>
                 </table>
             </div>
         </div>
-
     </main>
 
     <footer style="background-color: #1e293b; color: #94a3b8; text-align: center; padding: 15px; font-size: 12px;">
@@ -153,38 +146,6 @@
     </footer>
     <script>
         var currentSchoolEmail = "";
-        // دالة استرجاع كلمة المرور الذاتية بناءً على البريد الإلكتروني المسجل
-        function recoverSchoolPassword(e) {
-            e.preventDefault();
-            
-            // 1. طلب البريد الإلكتروني من المدير عبر صندوق إدخال منبثق
-            var inputEmail = prompt("📧 يرجى إدخال البريد الإلكتروني الرسمي للمدرسة لاستعادة كلمة المرور:");
-            
-            if (inputEmail === null) return; // إذا ضغط إلغاء الأمر
-            inputEmail = inputEmail.trim();
-            if (inputEmail === "") { alert("❌ خطأ: لم تقم بكتابة أي بريد إلكتروني!"); return; }
-
-            var schools = [];
-            try { schools = JSON.parse(localStorage.getItem('schools_database')) || []; } catch(err) { schools = []; }
-
-            // 2. البحث عن الإيميل بداخل قاعدة البيانات المعزولة
-            var schoolFound = null;
-            for (var i = 0; i < schools.length; i++) {
-                if (schools[i] && schools[i].email === inputEmail) {
-                    schoolFound = schools[i];
-                    break;
-                }
-            }
-
-            // 3. التحقق وإظهار النتيجة فوراً للمدير
-            if (!schoolFound) {
-                alert("❌ عذراً: هذا البريد الإلكتروني غير مسجل في النظام بتاتاً! يرجى التأكد من الحروف.");
-            } else {
-                alert("🔑 تم التحقق بنجاح!\n\nمدرسة: " + schoolFound.schoolName + "\nكلمة المرور الخاصة بكم هي: ( " + schoolFound.password + " )");
-            }
-        }
-
-
 
         function handleSchoolLogin(e) {
             e.preventDefault();
@@ -218,201 +179,145 @@
             document.getElementById('schoolLoginBox').style.display = 'block';
             document.getElementById('schoolDashboardMain').style.display = 'none';
         }
-        // استدعاء مكاتب خوادم Firebase السحابية الرسمية لربط لوحة المدير أونلاين
-        import { initializeApp } from "https://gstatic.com";
-        import { getDatabase, ref, get, set } from "https://gstatic.com";
 
-        // إعدادات خادم قاعدة البيانات المركزي الخاص بك
-        const firebaseConfig = {
-            databaseURL: "https://firebaseio.com"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // دالة جلب وعرض قائمة الطلاب مباشرة من السيرفر أونلاين
-        async function loadStudentsList() {
+        function loadStudentsList() {
             var tbody = document.getElementById('studentsTableBody');
-            try {
-                const snapshot = await get(ref(db, 'schools'));
-                var schools = snapshot.exists() ? snapshot.val() : {};
-                var students = [];
-                var mySchoolKey = "";
-
-                // البحث عن مفتاح المدرسة الحالي بناءً على البريد الإلكتروني
-                for (let key in schools) {
-                    if (schools[key].email === currentSchoolEmail) {
-                        students = schools[key].students || [];
-                        mySchoolKey = key;
-                        break;
-                    }
-                }
-
-                if (students.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">لا يوجد طلاب مسجلين حالياً بداخل سجل مدرستكم السحابي.</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = '';
-                for (var j = 0; j < students.length; j++) {
-                    var stu = students[j];
-                    if (!stu) continue;
-                    var sClass = stu.stuClass || "غير محدد";
-                    var statusBadge = stu.signed ? '<span class="badge badge-signed">✅ وقّع العقد</span>' : '<span class="badge badge-unsigned">⏳ لم يوقع بعد</span>';
-                    var actionBtn = stu.signed ? '<button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="viewStudentContract(\'' + stu.id + '\')">📄 استعراض العقد</button>' : '<span style="color:#cbd5e1;">غير متاح</span>';
-                    var deleteBtn = '<button class="btn" style="background-color:#fee2e2; color:#dc2626; padding:4px 8px; font-size:11px;" onclick="deleteSingleStudent(\'' + stu.id + '\')">🗑️ مسح</button>';
-                    
-                    tbody.innerHTML += '<tr><td><b>' + stu.id + '</b></td><td>' + stu.name + '</td><td>' + sClass + '</td><td>' + statusBadge + '</td><td>' + actionBtn + '</td><td>' + deleteBtn + '</td></tr>';
-                }
-            } catch (err) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#ef4444;">⚠️ فشل جلب البيانات من السيرفر السحابي.</td></tr>';
+            var schools = JSON.parse(localStorage.getItem('schools_database')) || [];
+            var students = [];
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === currentSchoolEmail) { students = schools[i].students || []; break; }
+            }
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#94a3b8;">لا يوجد طلاب مسجلين حالياً.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            for (var j = 0; j < students.length; j++) {
+                var stu = students[j];
+                var statusBadge = stu.signed ? '<span class="badge badge-signed">✅ وقّع العقد</span>' : '<span class="badge badge-unsigned">⏳ لم يوقع بعد</span>';
+                var actionBtn = stu.signed ? '<button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="viewStudentContract(\'' + stu.id + '\')">📄 استعراض وطباعة العقد</button>' : '<span style="color:#cbd5e1;">غير متاح</span>';
+                tbody.innerHTML += '<tr><td><b>' + stu.id + '</b></td><td>' + stu.name + '</td><td>' + statusBadge + '</td><td>' + actionBtn + '</td></tr>';
             }
         }
 
-        // دالة الإضافة الفردية المؤمنة بفحص تعارض الهويات أونلاين كلياً
-        async function addSingleStudent(e) {
+              function addSingleStudent(e) {
             e.preventDefault();
             var name = document.getElementById('stuName').value.trim();
             var id = document.getElementById('stuId').value.trim();
-            var sClass = document.getElementById('stuClass').value.trim();
+            var schools = JSON.parse(localStorage.getItem('schools_database')) || [];
 
-            try {
-                const snapshot = await get(ref(db, 'schools'));
-                var schools = snapshot.exists() ? snapshot.val() : {};
-                var mySchoolKey = "";
-
-                // 🚫 فحص السيرفر الصارم: التأكد من عدم تكرار الهوية في أي مدرسة بالمملكة أونلاين
-                for (let key in schools) {
-                    if (schools[key].email === currentSchoolEmail) { mySchoolKey = key; }
-                    let list = schools[key].students || [];
-                    let exist = list.find(s => s && s.id === id);
-                    if (exist) {
-                        alert("❌ خطأ تعارض حاسم: رقم الهوية هذا مسجل مسبقاً أونلاين في مدرسة (" + schools[key].schoolName + ")! لا يمكن التكرار.");
+            // 🚫 فحص حاسم: التأكد من أن الهوية غير مسجلة في مدرسة أخرى نهائياً
+            for (var i = 0; i < schools.length; i++) {
+                var list = schools[i].students || [];
+                for (var j = 0; j < list.length; j++) {
+                    if (list[j] && list[j].id === id) {
+                        alert("❌ خطأ حاسم: رقم الهوية هذا مسجل مسبقاً في مدرسة (" + schools[i].schoolName + ")! لا يمكن تكرار الطلاب بين المدارس.");
                         return;
                     }
                 }
-
-                if (!mySchoolKey) { alert("❌ خطأ: لم يتم العثور على صلاحية لمدرستكم بالسيرفر!"); return; }
-
-                var myStudents = schools[mySchoolKey].students || [];
-                myStudents.push({ name: name, id: id, stuClass: sClass, signed: false, data: null });
-                
-                // حفظ التحديث الجديد مباشرة على السيرفر المركزي أونلاين
-                await set(ref(db, 'schools/' + mySchoolKey + '/students'), myStudents);
-                
-                document.getElementById('stuName').value = '';
-                document.getElementById('stuId').value = '';
-                document.getElementById('stuClass').value = '';
-                alert('🎉 تم حفظ وإدراج الطالب بالسيرفر المركزي بنجاح!');
-                loadStudentsList();
-            } catch (error) {
-                alert("❌ فشل الاتصال بقاعدة البيانات أثناء حفظ الطالب.");
             }
+
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === currentSchoolEmail) {
+                    schools[i].students = schools[i].students || [];
+                    schools[i].students.push({ name: name, id: id, signed: false, data: null });
+                    break;
+                }
+            }
+            localStorage.setItem('schools_database', JSON.stringify(schools));
+            document.getElementById('stuName').value = '';
+            document.getElementById('stuId').value = '';
+            alert('🎉 تم إضافة الطالب بنجاح إلى سجل مدرستكم!');
+            loadStudentsList();
         }
 
-        // دالة اللصق الجماعي الذكية أونلاين مع فرز التكرار السحابي الفوري
-        async function addBulkStudents() {
+        function addBulkStudents() {
             var text = document.getElementById('bulkStudentsText').value.trim();
             if(!text) { alert('يرجى لصق قائمة الأسماء أولاً!'); return; }
             var lines = text.split('\n');
+            var schools = JSON.parse(localStorage.getItem('schools_database')) || [];
+            var count = 0;
+            var duplicatesCount = 0;
 
-            try {
-                const snapshot = await get(ref(db, 'schools'));
-                var schools = snapshot.exists() ? snapshot.val() : {};
-                var mySchoolKey = "";
-                
-                for (let key in schools) {
-                    if (schools[key].email === currentSchoolEmail) { mySchoolKey = key; break; }
-                }
-                if (!mySchoolKey) { alert("❌ خطأ بالصلاحية!"); return; }
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === currentSchoolEmail) {
+                    schools[i].students = schools[i].students || [];
+                    for (var j = 0; j < lines.length; j++) {
+                        var line = lines[j].trim();
+                        if(!line) continue;
+                        var parts = line.split(',');
+                        if(parts.length >= 2) {
+                            var sName = parts[0].trim();
+                            var sId = parts[1].trim();
+                            
+                            var isGlobalDuplicate = false;
+                            for (var x = 0; x < schools.length; x++) {
+                                var currentList = schools[x].students || [];
+                                for (var y = 0; y < currentList.length; y++) {
+                                    if (currentList[y] && currentList[y].id === sId) {
+                                        isGlobalDuplicate = true;
+                                        break;
+                                    }
+                                }
+                                if (isGlobalDuplicate) break;
+                            }
 
-                var myStudents = schools[mySchoolKey].students || [];
-                var count = 0;
-                var duplicatesAlerts = [];
-
-                for (var j = 0; j < lines.length; j++) {
-                    var line = lines[j].trim();
-                    if(!line) continue;
-                    var parts = line.split(',');
-                    
-                    if(parts.length >= 2) {
-                        var sName = parts[0].trim();
-                        var sId = parts[1].trim();
-                        var sClass = parts[2] ? parts[2].trim() : "-";
-                        
-                        var duplicateSchoolName = "";
-                        for (let key in schools) {
-                            let list = schools[key].students || [];
-                            if (list.find(s => s && s.id === sId)) { duplicateSchoolName = schools[key].schoolName; break; }
-                        }
-
-                        if (duplicateSchoolName === "") {
-                            myStudents.push({ name: sName, id: sId, stuClass: sClass, signed: false, data: null });
-                            count++;
-                        } else {
-                            duplicatesAlerts.push("الطالب (" + sName + " - " + sId + ") مسجل مسبقاً في مدرسة: " + duplicateSchoolName);
+                            if (!isGlobalDuplicate) {
+                                schools[i].students.push({ name: sName, id: sId, signed: false, data: null });
+                                count++;
+                            } else {
+                                duplicatesCount++;
+                            }
                         }
                     }
+                    break;
                 }
-                
-                await set(ref(db, 'schools/' + mySchoolKey + '/students'), myStudents);
-                document.getElementById('bulkStudentsText').value = '';
-                
-                if (duplicatesAlerts.length > 0) {
-                    alert("🚨 تحذير تكرار الهويات بالسيرفر:\n\n" + duplicatesAlerts.join("\n") + "\n\n✔️ تم إضافة بقية الطلاب النظيفين بنجاح وعددهم: (" + count + ")");
-                } else {
-                    alert("🎉 تم إضافة كامل القائمة الجماعية وعددهم (" + count + ") طالب بنجاح بداخل السيرفر المركزي.");
-                }
-                loadStudentsList();
-            } catch (error) {
-                alert("❌ حدث خطأ أثناء معالجة القائمة الجماعية أونلاين.");
             }
+            localStorage.setItem('schools_database', JSON.stringify(schools));
+            document.getElementById('bulkStudentsText').value = '';
+            if (duplicatesCount > 0) {
+                alert('🎉 تم إضافة (' + count + ') طالب بنجاح. وتم تجاهل (' + duplicatesCount + ') طالب لأن هوياتهم مسجلة في مدارس أخرى بالفعل!');
+            } else {
+                alert('🎉 تم إضافة عدد (' + count + ') طالب بنجاح بداخل السجل الدائم.');
+            }
+            loadStudentsList();
         }
 
-        // دالة المسح الفردي المباشرة من السيرفر السحابي
-        async function deleteSingleStudent(studentId) {
-            if (!confirm("⚠️ هل أنت متأكد من رغبتك في حذف هذا الطالب نهائياً من خوادم السيرفر؟")) return;
-            try {
-                const snapshot = await get(ref(db, 'schools'));
-                var schools = snapshot.exists() ? snapshot.val() : {};
-                var mySchoolKey = "";
 
-                for (let key in schools) {
-                    if (schools[key].email === currentSchoolEmail) { mySchoolKey = key; break; }
+        function addBulkStudents() {
+            var text = document.getElementById('bulkStudentsText').value.trim();
+            if(!text) { alert('يرجى لصق قائمة الأسماء أولاً!'); return; }
+            var lines = text.split('\n');
+            var schools = JSON.parse(localStorage.getItem('schools_database')) || [];
+            var count = 0;
+            for (var i = 0; i < schools.length; i++) {
+                if (schools[i].email === currentSchoolEmail) {
+                    schools[i].students = schools[i].students || [];
+                    for (var j = 0; j < lines.length; j++) {
+                        var line = lines[j].trim();
+                        if(!line) continue;
+                        var parts = line.split(',');
+                        if(parts.length >= 2) {
+                            var sName = parts[0].trim();
+                            var sId = parts[1].trim();
+                            var exist = false;
+                            for(var k=0; k < schools[i].students.length; k++) {
+                                if(schools[i].students[k].id === sId) { exist = true; break; }
+                            }
+                            if(!exist) {
+                                schools[i].students.push({ name: sName, id: sId, signed: false, data: null });
+                                count++;
+                            }
+                        }
+                    }
+                    break;
                 }
-
-                if (mySchoolKey) {
-                    var list = schools[mySchoolKey].students || [];
-                    var updatedList = list.filter(function(stu) { return stu && stu.id !== studentId; });
-                    await set(ref(db, 'schools/' + mySchoolKey + '/students'), updatedList);
-                    loadStudentsList();
-                }
-            } catch (e) { alert("❌ فشل المسح من السيرفر."); }
+            }
+            localStorage.setItem('schools_database', JSON.stringify(schools));
+            document.getElementById('bulkStudentsText').value = '';
+            alert('تم إضافة عدد (' + count + ') طالب بنجاح.');
+            loadStudentsList();
         }
-
-        // دالة تصفير ومسح السجل الجماعي للمدرسة من السيرفر
-        async function clearAllSchoolStudents() {
-            if (!confirm("🚨 تحذير أمني: هل أنت متأكد من رغبتك في تصفير جميع طلاب مدرستكم من السيرفر بالكامل؟")) return;
-            try {
-                const snapshot = await get(ref(db, 'schools'));
-                var schools = snapshot.exists() ? snapshot.val() : {};
-                var mySchoolKey = "";
-
-                for (let key in schools) {
-                    if (schools[key].email === currentSchoolEmail) { mySchoolKey = key; break; }
-                }
-
-                if (mySchoolKey) {
-                    await set(ref(db, 'schools/' + mySchoolKey + '/students'), []);
-                    loadStudentsList();
-                }
-            } catch (e) { alert("❌ فشل تصفير السيرفر."); }
-        }
-
-        // جعل الدوال متاحة للواجهة الخارجية للمتصفح
-        window.loadStudentsList = loadStudentsList;
-        window.addSingleStudent = addSingleStudent;
-        window.addBulkStudents = addBulkStudents;
 
                     // دالة الطباعة المعزولة والمستقلة بالكامل داخل صفحة المدير (بدون فتح صفحة الطالب نهائياً)
         function viewStudentContract(studentId) {
@@ -461,7 +366,7 @@
                 printWindow.document.write('<div class="print-gov-header">');
                 printWindow.document.write('<div style="text-align: right; font-weight: bold; line-height: 1.6;"><div>المملكة العربية السعودية</div><div>وزارة التعليم</div><div>الإدارة العامة للتعليم بمنطقة: ' + (currentSchool.region || "-") + '</div><div class="school-badge-title">مدرسة: ' + (currentSchool.schoolName || "-") + '</div></div>');
                 printWindow.document.write('<div style="text-align: center; font-weight: bold; color: #115e59; font-size: 16px;">وزارة التعليم</div>');
-                                printWindow.document.write('<div style="text-align: left; font-weight: bold; line-height: 1.6;"><div>العام الدراسي: 1448 هـ</div><div>المرحلة: ' + (currentSchool.stage || "-") + '</div><div>مدير/ة المدرسة: ' + (currentSchool.managerName || "-") + '</div></div>');
+                printWindow.document.write('<div style="text-align: left; font-weight: bold; line-height: 1.6;"><div>العام الدراسي: 1448 هـ</div><div>المرحلة: ' + (currentSchool.stage || "-") + '</div></div>');
                 printWindow.document.write('</div>');
 
                 printWindow.document.write('<div class="main-form-title">نموذج الالتزام المدرسي المعتمد</div>');
@@ -469,12 +374,12 @@
                 // كرت تعهد الطالب الموثق
                 printWindow.document.write('<div class="card-section"><h3>🔵 خاص بالطالب</h3>');
                 printWindow.document.write('<div class="data-display-inline"><b>الاسم :</b> ' + studentData.name + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>المرحلة الدراسية :</b> ' + (currentSchool.stage || "-") + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>رقم السجل / الهوية :</b> ' + studentId + '</div>');
-                printWindow.document.write('<div class="text-statement">نعم أنا الطالب/ـة الموضح اسمه/ـها وبياناته/ـها ، قد اطلعت على محتوى قواعد السلوك و المواظبة ، و بناًء عليه أتعهد أن ألتزم بالأنظمة و التعليمات الخاصة بقواعد السلوك و المواظبة . واتعهد بااللتزام بالزي الرسمي للمدرسة.</div>');
+                printWindow.document.write('<div class="text-statement">نعم أنا الطالب الموضح اسمه وبياناته أعلاه ، قد اطلعت على محتوى قواعد السلوك و المواظبة ، و بناًء عليه أتعهد أن ألتزم بالأنظمة و التعليمات الخاصة بقواعد السلوك و المواظبة . واتعهد بااللتزام بالزي الرسمي للمدرسة.</div>');
                 printWindow.document.write('<div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px; margin-top:5px;"><div><b>التوقيع الإلكتروني :</b> <span style="color:#16a34a;">✓ مصادق بالبصمة الرقمية المعتمدة</span></div><div><b>التاريخ الهجري :</b> <span style="color:#115e59;">' + studentData.data.signDate + '</span></div></div></div>');
 
                 // كرت تعهد ولي الأمر المخزن بالكامل
                 printWindow.document.write('<div class="card-section" style="border-right-color: #0d9488;"><h3>🟢 خاص بولي الأمر</h3>');
-                printWindow.document.write('<div class="text-statement">نعم أنا ولي/ـة أمر الطالب/ـة الموضح اسمه/ـها وبياناته/ـها، قد اطلعت على محتوى قواعد السلوك والمواظبة وبناء عليه أتعهد بأن أتعاون مع إدارة المدرسة في سبيل مصلحة ابني/ابنتي، ليكون/لتكون ملتزماً/ة بالأنظمة والتعليمات الخاصة بقواعد السلوك والمواظبة، واتعهد بالتزام الطالب/ـة بالزي الرسمي حسب الدليل الموضح في الباركود المرفق. كما نرفق دليل نظام حماية المتعلمين والطفل لدعم الشراكة بين الأسرة والمدرسة في توفير بيئة تعليمية آمنة . و أتحمل مسؤولية صحة أرقام التواصل التالية :</div>');
+                printWindow.document.write('<div class="text-statement">نعم أنا ولي أمر الطالب الموضح اسمه وبياناته . قد اطلعت على محتوى قواعد السلوك والمواظبة وبناء عليه أتعهد بأن أتعاون مع إدارة المدرسة في سبيل مصلحة ابني /ابنتي ، ليكون ملتزماً بالأنظمة والتعليمات الخاصة بقواعد السلوك والمواظبة ، واتعهد بالتزام الطالب بالزي الرسمي حسب الدليل الموضح في الباركود المرفق. كما نرفق دليل نظام حماية المتعلمين والطفل لدعم الشراكة بين الأسرة والمدرسة في توفير بيئة تعليمية آمنة . و أتحمل مسؤولية صحة أرقام التواصل التالية :</div>');
                 
                 printWindow.document.write('<div class="interactive-grid">');
                 printWindow.document.write('<div class="field-group"><label>الاسم الكامل لولي الأمر /</label><div class="field-value">' + studentData.data.parentName + '</div></div>');
