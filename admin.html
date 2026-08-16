@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<!-- استدعاء مكاتب خوادم جوجل الصافية لحقن الاتصال المباشر أونلاين -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
-    <script src="https://firebase-bridge.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة تحكم النظام العام (الآدمن)</title>
@@ -17,7 +13,6 @@
         .gov-country { font-size: 12px; color: #64748b; font-weight: 600; }
         .gov-ministry { font-size: 20px; font-weight: bold; color: #1e293b; margin: 2px 0; }
         .gov-system { font-size: 14px; font-weight: 600; color: #059669; }
-        .logos-container { display: flex; align-items: center; gap: 20px; }
         
         /* صندوق واجهة دخول الآدمن للرقابة */
         .login-box { max-width: 420px; margin: 60px auto; background: white; padding: 35px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
@@ -26,7 +21,7 @@
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; }
         .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; }
 
-        /* اللوحة الرئيسية والجدول المربوط بالسيرفر */
+        /* اللوحة الرئيسية والجدول المربوط بالسيرفر الموحد */
         main { max-width: 1200px; margin: 40px auto; padding: 0 20px; flex-grow: 1; width: 100%; display: none; }
         .admin-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 25px; }
@@ -49,6 +44,8 @@
         .status-pending { background-color: #fffbeb; color: #92400e; border: 1px solid #fef3c7; }
         .receipt-preview { height: 35px; max-width: 70px; object-fit: cover; cursor: pointer; border-radius: 4px; border: 1px solid #cbd5e1; }
     </style>
+    <!-- استدعاء المكتبة الرسمية الصافية لـ Supabase للاتصال المباشر عبر المتصفح -->
+    <script src="https://jsdelivr.net"></script>
 </head>
 <body>
 
@@ -102,96 +99,107 @@
         المملكة العربية السعودية • جميع الحقوق محفوظة لنظام الالتزام المدرسي ١٤٤٨ هـ
     </footer>
     <script>
-        // تهيئة قواعد البيانات السحابية لشركة جوجل بشكل مباشر ومستقل
-        const firebaseConfig = { 
-            databaseURL: "https://firebaseio.com" 
-        };
-        if (!firebase.apps.length) { 
-            firebase.initializeApp(firebaseConfig); 
-        }
-        const database = firebase.database();
+        // 🔐 ربط وتغذية السيرفر السحابي برابط مشروعك وعنوان مفتاحك الخاص فوراً
+        const SUPABASE_URL = "https://viydmzdaalitdpalgqok.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_nluc7Ek8ILZComfvXEc1Jw_PI3ersb_publishable_n1uc7Ek8ILZComfvXEciJw_PI3er9Lc"; // امسح النقطتين ولصق مفتاح الـ anon الطويل الكامل المنسوخ من موقعك بيدك
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // دالة فحص وتوثيق دخول المشرف العام باليوزر والباسورد الثابتين
+        // دالة التحقق والدخول المباشر للمشرف العام
         function handleAdminLogin(e) {
             e.preventDefault();
             var user = document.getElementById('adminUser').value.trim();
             var pass = document.getElementById('adminPass').value.trim();
 
-            if (user === "abdulaziz172" && pass === "ABDulaziz@2030") {
+            if (user === "3alfayi" && pass === "11223344") {
                 alert("🎉 مرحباً بك يا مشرف النظام! تم التحقق بنجاح.");
                 document.getElementById('adminLoginBox').style.display = 'none';
                 document.getElementById('adminMainPanel').style.display = 'block';
                 renderSchoolsRequestsTable();
             } else {
-                alert("❌ خطأ أمني: اسم المستخدم أو كلمة المرور غير صحيحة!");
+                alert("❌ اسم المستخدم أو كلمة المرور غير صحيحة!");
             }
         }
 
-               function renderSchoolsRequestsTable() {
+        // دالة جلب وعرض طلبات المدارس أونلاين من سيرفر Supabase مباشرة
+        async function renderSchoolsRequestsTable() {
             var tbody = document.getElementById('schoolsTableBody');
             if (!tbody) return;
 
             tbody.innerHTML = '<tr><td colspan="10" style="color:#64748b; padding:20px;">⏳ جاري جلب طلبات المدارس السحابية...</td></tr>';
 
-            // الاتصال السحابي المباشر لقشط البيانات أونلاين فوراً
-            database.ref('schools').get().then((snapshot) => {
-                var schools = snapshot.val() || {};
-                tbody.innerHTML = '';
-                var hasRecords = false;
+            // أمر الاستعلام الصافي لقشط البيانات مرتبة حسب وقت الإنشاء
+            const { data: schools, error } = await supabase
+                .from('schools')
+                .select('*')
+                .order('created_at', { ascending: true });
 
-                for (let key in schools) {
-                    var s = schools[key];
-                    if (!s) continue;
-                    hasRecords = true;
+            if (error) {
+                tbody.innerHTML = '<tr><td colspan="10" style="color:#ef4444; padding:20px;">⚠️ فشل جلب طلبات المدارس من السيرفر السحابي!</td></tr>';
+                return;
+            }
 
-                    var statusBadge = s.status === 'تم التفعيل' ? '<span class="badge status-active">معتمد ومفعل</span>' : '<span class="badge status-pending">بانتظار الاعتماد</span>';
-                    var approveBtn = s.status === 'تم التفعيل' ? '<span style="color:#059669; font-weight:bold;">✓ مفعل</span>' : '<button class="btn btn-approve" onclick="approveSchoolAccount(\'' + key + '\')">✅ تفعيل</button>';
-                    var deleteBtn = '<button class="btn btn-delete" style="margin-right:5px;" onclick="deleteSchoolAccount(\'' + key + '\')">حذف 🗑️</button>';
-                    var imgTag = s.receipt ? '<img src="' + s.receipt + '" class="receipt-preview" onclick="window.open(this.src)">' : 'لا يوجد';
+            tbody.innerHTML = '';
 
-                    tbody.innerHTML += '<tr>' +
-                        '<td>' + (s.region || "-") + '</td>' +
-                        '<td><b>' + (s.schoolName || "-") + '</b></td>' +
-                        '<td>' + (s.stage || "-") + '</td>' +
-                        '<td>' + (s.managerName || "-") + '</td>' +
-                        '<td>' + (s.phone || "-") + '</td>' +
-                        '<td>' + (s.email || "-") + '</td>' +
-                        '<td><code style="color:#dc2626; font-weight:bold;">' + (s.password || "-") + '</code></td>' +
-                        '<td>' + imgTag + '</td>' +
-                        '<td>' + statusBadge + '</td>' +
-                        '<td>' + approveBtn + deleteBtn + '</td>' +
-                        '</tr>';
-                }
+            if (!schools || schools.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="color:#94a3b8; padding:30px;">🔔 لا توجد طلبات مدارس مسجلة حالياً بالسيرفر.</td></tr>';
+                return;
+            }
 
-                if (!hasRecords) {
-                    tbody.innerHTML = '<tr><td colspan="10" style="color:#94a3b8; padding:30px;">🔔 لا توجد طلبات مدارس مسجلة حالياً بالسيرفر.</td></tr>';
-                }
-            }).catch((err) => {
-                tbody.innerHTML = '<tr><td colspan="10" style="color:#ef4444; padding:20px;">⚠️ فشل جلب طلبات المدارس من السيرفر السحابي.</td></tr>';
-            });
+            // حلقة التكرار السحابية لتعبئة الخانات العشرة كاملة بجدولك الفخم
+            for (var i = 0; i < schools.length; i++) {
+                var s = schools[i];
+                var statusBadge = s.status === 'تم التفعيل' ? '<span class="badge status-active">معتمد ومفعل</span>' : '<span class="badge status-pending">بانتظار الاعتماد</span>';
+                var approveBtn = s.status === 'تم التفعيل' ? '<span style="color:#059669; font-weight:bold;">✓ مفعل</span>' : '<button class="btn btn-approve" onclick="approveSchoolAccount(\'' + s.id + '\')">✅ تفعيل</button>';
+                var deleteBtn = '<button class="btn btn-delete" style="margin-right:5px;" onclick="deleteSchoolAccount(\'' + s.id + '\')">حذف 🗑️</button>';
+                var imgTag = s.receipt ? '<img src="' + s.receipt + '" class="receipt-preview" onclick="window.open(this.src)">' : 'لا يوجد';
+
+                tbody.innerHTML += '<tr>' +
+                    '<td>' + (s.region || "-") + '</td>' +
+                    '<td><b>' + (s.schoolName || "-") + '</b></td>' +
+                    '<td>' + (s.stage || "-") + '</td>' +
+                    '<td>' + (s.managerName || "-") + '</td>' +
+                    '<td>' + (s.phone || "-") + '</td>' +
+                    '<td>' + (s.email || "-") + '</td>' +
+                    '<td><code style="color:#dc2626; font-weight:bold;">' + (s.password || "-") + '</code></td>' +
+                    '<td>' + imgTag + '</td>' +
+                    '<td>' + statusBadge + '</td>' +
+                    '<td>' + approveBtn + deleteBtn + '</td>' +
+                    '</tr>';
+            }
         }
-        // دالة حقن وتحديث حالة الحساب للتفعيل أونلاين فوراً
-        function approveSchoolAccount(schoolKey) {
+
+        // دالة تحديث حالة الحساب للتفعيل أونلاين فوراً بالسيرفر
+        async function approveSchoolAccount(schoolId) {
             if (!confirm("هل أنت متأكد من رغبتك في اعتماد وتفعيل حساب هذه المدرسة على السيرفر السحابي؟")) return;
             
-            database.ref('schools/' + schoolKey + '/status').set('تم التفعيل').then(() => {
+            const { error } = await supabase
+                .from('schools')
+                .update({ status: 'تم التفعيل' })
+                .eq('id', schoolId);
+
+            if (error) {
+                alert("❌ فشل إرسال أمر التفعيل للسيرفر السحابي.");
+            } else {
                 alert("🎯 تم تفعيل واعتماد المدرسة بنجاح على الإنترنت، ويمكن لمديرها الدخول الآن!");
                 renderSchoolsRequestsTable();
-            }).catch((err) => {
-                alert("❌ فشل إرسال أمر التفعيل للسيرفر السحابي.");
-            });
+            }
         }
 
-        // دالة مسح وتطهير الحساب المرفوض نهائياً من قاعدة البيانات أونلاين
-        function deleteSchoolAccount(schoolKey) {
-            if (!confirm("⚠️ تحذير حاسم: هل أنت متأكد من حذف حساب هذه المدرسة نهائياً من السيرفر السحابي؟ (لا يمكن التراجع عن هذا الإجراء)")) return;
+        // دالة مسح وحذف الحساب المرفوض نهائياً من قاعدة البيانات أونلاين
+        async function deleteSchoolAccount(schoolId) {
+            if (!confirm("⚠️ تحذير حاسم: هل أنت متأكد من حذف حساب هذه المدرسة نهائياً من السيرفر السحابي؟ (لا يمكن التراجع)")) return;
             
-            database.ref('schools/' + schoolKey).remove().then(() => {
+            const { error } = await supabase
+                .from('schools')
+                .delete()
+                .eq('id', schoolId);
+
+            if (error) {
+                alert("❌ فشل حذف المدرسة من السيرفر السحابي.");
+            } else {
                 alert("🗑️ تم حذف المدرسة نهائياً من السيرفر بنجاح.");
                 renderSchoolsRequestsTable();
-            }).catch((err) => {
-                alert("❌ فشل حذف المدرسة من السيرفر السحابي.");
-            });
+            }
         }
 
         // دالة تصفير الحقول وتأمين الخروج للآدمن
