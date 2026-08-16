@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<!-- استدعاء مكاتب خوادم جوجل الصافية لحقن الاتصال المباشر أونلاين -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة تحكم النظام العام (الآدمن)</title>
@@ -45,9 +48,6 @@
         .status-pending { background-color: #fffbeb; color: #92400e; border: 1px solid #fef3c7; }
         .receipt-preview { height: 35px; max-width: 70px; object-fit: cover; cursor: pointer; border-radius: 4px; border: 1px solid #cbd5e1; }
     </style>
-    <!-- استدعاء مكاتب خوادم جوجل الصافية لحقن الاتصال المباشر أونلاين -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
 </head>
 <body>
 
@@ -125,6 +125,7 @@
                 alert("❌ خطأ أمني: اسم المستخدم أو كلمة المرور غير صحيحة!");
             }
         }
+
                function renderSchoolsRequestsTable() {
             var tbody = document.getElementById('schoolsTableBody');
             if (!tbody) return;
